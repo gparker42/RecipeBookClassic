@@ -43,7 +43,7 @@ return function(database, metadata)
     -- Research units and ingredients per unit
     for _, ingredient in ipairs(prototype.research_unit_ingredients) do
       research_ingredients_per_unit[#research_ingredients_per_unit + 1] = {
-        class = "item", --ingredient.type,
+        class = "item",  -- GrP 1.x allowed fluids, 2.x no longer does?
         name = ingredient.name,
         amount_ident = util.build_amount_ident({ amount = ingredient.amount }),
       }
@@ -126,6 +126,7 @@ return function(database, metadata)
 
     database.technology[name] = {
       class = "technology",
+      contributes_research_ingredients_to = util.unique_obj_array(),
       hidden = prototype.hidden,
       max_level = max_level,
       min_level = level,
@@ -162,7 +163,7 @@ return function(database, metadata)
     util.add_to_dictionary("technology_description", name, prototype.localised_description)
   end
 
-  -- Generate prerequisites and prerequisite_of
+  -- Generate prerequisites and prerequisite_of and contributes_research_ingredients_to
   for name, technology in pairs(database.technology) do
     local prototype = storage.prototypes.technology[name]
 
@@ -174,6 +175,16 @@ return function(database, metadata)
           class = "technology",
           name = name,
         }
+      end
+    end
+
+    -- other_tech in tech.contributes_research_ingredients_to[]
+    -- means one of tech's unlocks is a research ingredient of other_tech
+    for _, ingredient in ipairs(prototype.research_unit_ingredients) do
+      local ingredient_data = database.item[ingredient.name]
+      for _, contributor_ident in pairs(ingredient_data.unlocked_by) do
+        local contributor_data = database.technology[contributor_ident.name]
+        contributor_data.contributes_research_ingredients_to[#contributor_data.contributes_research_ingredients_to + 1] = { class = "technology", name = name }
       end
     end
   end
