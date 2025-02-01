@@ -1,4 +1,4 @@
-local gui = require("__flib__.gui")
+local gui = require("old-flib-gui")
 local table = require("__flib__.table")
 
 local constants = require("constants")
@@ -98,7 +98,7 @@ function Gui:update_contents(options)
 
   -- COMMON DATA
 
-  local obj_data = global.database[context.class][context.name]
+  local obj_data = storage.database[context.class][context.name]
 
   local player_data = formatter.build_player_data(self.player, self.player_table)
   local gui_translations = player_data.translations.gui
@@ -118,7 +118,7 @@ function Gui:update_contents(options)
   local history_len = #history
   local entries = {}
   for i, history_context in ipairs(history) do
-    local obj_data = global.database[history_context.class][history_context.name]
+    local obj_data = storage.database[history_context.class][history_context.name]
     local info = formatter(obj_data, player_data, { always_show = true, label_only = true })
     local caption = info.caption
     if not info.researched then
@@ -171,7 +171,7 @@ function Gui:update_contents(options)
     state.search_opened = false
     local search_button = refs.titlebar.search_button
     local search_textfield = refs.titlebar.search_textfield
-    search_button.sprite = "utility/search_white"
+    search_button.sprite = "utility/search"
     search_button.style = "frame_action_button"
     search_textfield.visible = false
 
@@ -190,7 +190,7 @@ function Gui:update_contents(options)
   local list_context = context.list
   if list_context then
     local source = list_context.context
-    local source_data = global.database[source.class][source.name]
+    local source_data = storage.database[source.class][source.name]
     local list = source_data[list_context.source]
     local list_len = #list
     local index = list_context.index

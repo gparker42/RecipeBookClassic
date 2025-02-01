@@ -1,7 +1,7 @@
 local util = require("scripts.util")
 
 return function(database)
-  for name, prototype in pairs(global.prototypes.recipe_category) do
+  for name, prototype in pairs(storage.prototypes.recipe_category) do
     database.recipe_category[name] = {
       class = "recipe_category",
       enabled_at_start = true,

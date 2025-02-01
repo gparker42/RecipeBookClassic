@@ -1,7 +1,7 @@
 local util = require("scripts.util")
 
 return function(database)
-  for name, prototype in pairs(global.prototypes.resource_category) do
+  for name, prototype in pairs(storage.prototypes.resource_category) do
     database.resource_category[name] = {
       class = "resource_category",
       enabled_at_start = true,

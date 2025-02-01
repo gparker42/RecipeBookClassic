@@ -5,7 +5,7 @@ local util = require("scripts.util")
 return function(database)
   for class in pairs(constants.prototypes.filtered_entities) do
     if class ~= "resource" then
-      for name, prototype in pairs(global.prototypes[class]) do
+      for name, prototype in pairs(storage.prototypes[class]) do
         local type = prototype.type
         local type_data = database.entity_type[type]
         if not type_data then

@@ -5,12 +5,11 @@ local util = require("scripts.util")
 local item_proc = {}
 
 function item_proc.build(database, metadata)
-  local modules = {}
   local place_as_equipment_results = {}
   local place_results = {}
   local rocket_launch_payloads = {}
 
-  for name, prototype in pairs(global.prototypes.item) do
+  for name, prototype in pairs(storage.prototypes.item) do
     -- Group
     local group = prototype.group
     local group_data = database.group[group.name]
@@ -83,19 +82,17 @@ function item_proc.build(database, metadata)
 
     local module_effects = {}
     if prototype.type == "module" then
-      -- Add to internal list of modules
-      modules[name] = table.invert(prototype.limitations)
       -- Process effects
       for effect_name, effect in pairs(prototype.module_effects or {}) do
         module_effects[#module_effects + 1] = {
           type = "plain",
           label = effect_name .. "_bonus",
-          value = effect.bonus,
+          value = effect,
           formatter = "percent",
         }
       end
       -- Process which beacons this module is compatible with
-      for beacon_name in pairs(global.prototypes.beacon) do
+      for beacon_name in pairs(storage.prototypes.beacon) do
         local beacon_data = database.entity[beacon_name]
         local allowed_effects = metadata.beacon_allowed_effects[beacon_name]
         local compatible = true
@@ -112,7 +109,7 @@ function item_proc.build(database, metadata)
         end
       end
       -- Process which crafters this module is compatible with
-      for crafter_name in pairs(global.prototypes.crafter) do
+      for crafter_name in pairs(storage.prototypes.crafter) do
         local crafter_data = database.entity[crafter_name]
         local allowed_effects = metadata.allowed_effects[crafter_name]
         local compatible = true
@@ -158,7 +155,7 @@ function item_proc.build(database, metadata)
       fuel_value = has_fuel_value and fuel_value or nil,
       gathered_from = metadata.gathered_from[name],
       group = { class = "group", name = group.name },
-      hidden = prototype.has_flag("hidden"),
+      hidden = prototype.hidden,
       ingredient_in = {},
       item_type = { class = "item_type", name = prototype.type },
       mined_from = {},
@@ -195,7 +192,6 @@ function item_proc.build(database, metadata)
     end
   end
 
-  metadata.modules = modules
   metadata.place_as_equipment_results = place_as_equipment_results
   metadata.place_results = place_results
 end

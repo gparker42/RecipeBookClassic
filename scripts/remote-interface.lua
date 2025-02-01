@@ -17,7 +17,7 @@ function remote_interface.get_object_data(class, name)
     error("Remote interface caller did not provide an object name.")
   end
 
-  return global.database[class][name]
+  return storage.database[class][name]
 end
 
 --- Opens the given info page in a Recipe Book window.
@@ -36,13 +36,13 @@ function remote_interface.open_page(player_index, class, name)
     error("Remote interface caller did not provide an object name.")
   end
 
-  local data = global.database[class][name]
+  local data = storage.database[class][name]
   if not data then
     return false
   end
 
   local player = game.get_player(player_index)
-  local player_table = global.players[player_index]
+  local player_table = storage.players[player_index]
 
   if player_table.flags.can_open_gui then
     OPEN_PAGE(player, player_table, { class = class, name = name })

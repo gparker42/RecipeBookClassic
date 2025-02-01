@@ -1,5 +1,5 @@
 local bounding_box = require("__flib__.bounding-box")
-local gui = require("__flib__.gui")
+local gui = require("old-flib-gui")
 local math = require("__flib__.math")
 local table = require("__flib__.table")
 
@@ -25,7 +25,7 @@ function gui_util.navigate_to(e)
   for _, interaction in pairs(constants.interactions[context.class]) do
     if table.deep_compare(interaction.modifiers, modifiers) then
       local action = interaction.action
-      local context_data = global.database[context.class][context.name]
+      local context_data = storage.database[context.class][context.name]
       local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
 
       if action == "view_details" then
@@ -65,7 +65,7 @@ function gui_util.navigate_to(e)
           player.play_sound({ path = "utility/cannot_build" })
         end
       elseif action == "open_in_technology_window" then
-        local player_table = global.players[e.player_index]
+        local player_table = storage.players[e.player_index]
         player_table.flags.technology_gui_open = true
         player.open_technology_gui(context.name)
       elseif action == "view_source" then
@@ -83,7 +83,7 @@ function gui_util.update_list_box(pane, source_tbl, player_data, iterator, optio
   local children = pane.children
   local add = pane.add
   for _, obj_ident in iterator(source_tbl) do
-    local obj_data = global.database[obj_ident.class][obj_ident.name]
+    local obj_data = storage.database[obj_ident.class][obj_ident.name]
     local info = formatter(obj_data, player_data, options)
     if info then
       i = i + 1
@@ -106,7 +106,7 @@ function gui_util.update_list_box(pane, source_tbl, player_data, iterator, optio
           tags = {
             [script.mod_name] = {
               context = { class = obj_ident.class, name = obj_ident.name },
-              flib = {
+              old_flib = {
                 on_click = { gui = "search", action = "open_object" },
               },
             },

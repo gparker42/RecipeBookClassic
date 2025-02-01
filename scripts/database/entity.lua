@@ -6,7 +6,7 @@ return function(database, metadata)
   metadata.gathered_from = {}
 
   --- @type table<string, LuaEntityPrototype>
-  local prototypes = global.prototypes.entity
+  local prototypes = storage.prototypes.entity
   for name, prototype in pairs(prototypes) do
     local equipment_categories = util.unique_obj_array()
     local equipment = util.unique_obj_array()

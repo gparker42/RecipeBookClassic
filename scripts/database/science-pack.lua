@@ -2,7 +2,7 @@ local util = require("scripts.util")
 
 return function(database)
   --- @type table<string, LuaItemPrototype>
-  local prototypes = global.prototypes.item
+  local prototypes = storage.prototypes.item
   for name, prototype in pairs(prototypes) do
     if prototype.type == "tool" then
       database.science_pack[name] = {

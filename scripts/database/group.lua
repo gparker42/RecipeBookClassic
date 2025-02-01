@@ -1,7 +1,7 @@
 local util = require("scripts.util")
 
 return function(database)
-  for name, prototype in pairs(global.prototypes.item_group) do
+  for name, prototype in pairs(storage.prototypes.item_group) do
     database.group[name] = {
       class = "group",
       enabled_at_start = true,

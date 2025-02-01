@@ -7,7 +7,7 @@ local fuel_category_proc = {}
 
 function fuel_category_proc.build(database)
   -- Add the actual fuel categories
-  for name, prototype in pairs(global.prototypes.fuel_category) do
+  for name, prototype in pairs(storage.prototypes.fuel_category) do
     database.fuel_category[name] = {
       class = "fuel_category",
       enabled_at_start = true,

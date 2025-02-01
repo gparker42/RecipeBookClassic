@@ -34,7 +34,7 @@ function actions.toggle_search(Gui, _, _)
   local search_textfield = refs.titlebar.search_textfield
   if opened then
     search_button.style = "frame_action_button"
-    search_button.sprite = "utility/search_white"
+    search_button.sprite = "utility/search"
     search_textfield.visible = false
 
     if state.search_query ~= "" then
@@ -47,7 +47,7 @@ function actions.toggle_search(Gui, _, _)
   else
     -- Show search textfield
     search_button.style = "flib_selected_frame_action_button"
-    search_button.sprite = "utility/search_black"
+    search_button.sprite = "utility/search"
     search_textfield.visible = true
     search_textfield.focus()
   end

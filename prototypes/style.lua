@@ -38,24 +38,26 @@ styles.rb_table_button = {
   left_margin = -8,
 }
 
-styles.rb_filter_group_button_tab = {
-  type = "button_style",
-  parent = "filter_group_button_tab",
-  width = 0,
-  horizontally_stretchable = "on",
-  disabled_graphical_set = styles.button.selected_graphical_set,
-}
-
-styles.rb_disabled_filter_group_button_tab = {
-  type = "button_style",
-  parent = "filter_group_button_tab",
-  width = 0,
-  horizontally_stretchable = "on",
-  draw_grayscale_picture = true,
-  default_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
-  hovered_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
-  clicked_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
-}
+-- GrP fixme filter_group_button_tab no longer exists
+--
+--styles.rb_filter_group_button_tab = {
+--  type = "button_style",
+--  parent = "filter_group_button_tab",
+--  width = 0,
+--  horizontally_stretchable = "on",
+--  disabled_graphical_set = styles.button.selected_graphical_set,
+--}
+--
+--styles.rb_disabled_filter_group_button_tab = {
+--  type = "button_style",
+--  parent = "filter_group_button_tab",
+--  width = 0,
+--  horizontally_stretchable = "on",
+--  draw_grayscale_picture = true,
+--  default_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
+--  hovered_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
+--  clicked_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
+--}
 
 -- FLOW STYLES
 
@@ -195,6 +197,31 @@ styles.rb_inside_deep_frame_under_tabs = {
   },
 }
 
+-- GrP fixme copied from 1.x factorio-data/core/prototypes.style.lua
+styles.rb_inside_deep_frame_for_tabs = {
+  type = "frame_style",
+  parent = "inside_deep_frame",
+  top_padding = 12,
+}
+
+-- GrP fixme copied from 1.x factorio-data/core/prototypes.style.lua
+styles.rb_filter_group_table = {
+  type = "table_style",
+  horizontal_spacing = 0,
+  vertical_spacing = 0,
+  padding = 0,
+  background_graphical_set = {
+    position = {282, 17},
+    corner_size = 8,
+    overall_tiling_vertical_size = 48,
+    overall_tiling_vertical_spacing = 24,
+    overall_tiling_vertical_padding = 12,
+    overall_tiling_horizontal_size = 48,
+    overall_tiling_horizontal_spacing = 23,
+    overall_tiling_horizontal_padding = 12,
+  }
+}
+
 styles.rb_filter_frame = {
   type = "frame_style",
   parent = "filter_frame",
@@ -267,7 +294,7 @@ styles.rb_dark_line = {
   bottom_margin = -2,
   border = {
     border_width = 8,
-    horizontal_line = { filename = "__RecipeBook__/graphics/dark-line.png", size = { 1, 8 } },
+    horizontal_line = { filename = "__RecipeBookClassic__/graphics/dark-line.png", size = { 1, 8 } },
   },
 }
 
@@ -338,7 +365,7 @@ styles.rb_filter_scroll_pane = {
 
 styles.rb_info_table = {
   type = "table_style",
-  parent = "mods_table",
+--  parent = "mods_table",
   top_margin = -6, -- To hide the strange first row styling
   bottom_margin = 1,
   top_cell_padding = 1,

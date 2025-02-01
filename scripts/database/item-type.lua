@@ -1,7 +1,7 @@
 local util = require("scripts.util")
 
 return function(database)
-  for name, prototype in pairs(global.prototypes.item) do
+  for name, prototype in pairs(storage.prototypes.item) do
     local type = prototype.type
     local type_data = database.item_type[type]
     if not type_data then

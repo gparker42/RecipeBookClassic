@@ -2,7 +2,7 @@ local util = require("scripts.util")
 
 return function(database, metadata)
   metadata.beacon_allowed_effects = {}
-  for name, prototype in pairs(global.prototypes.beacon) do
+  for name, prototype in pairs(storage.prototypes.beacon) do
     local size = util.get_size(prototype) --[[@as DisplayResolution]]
 
     database.entity[name] = {
@@ -10,9 +10,10 @@ return function(database, metadata)
       blueprintable = util.is_blueprintable(prototype),
       class = "entity",
       distribution_effectivity = prototype.distribution_effectivity,
+      -- GrP fixme quality
       effect_area = {
-        height = size.height + (prototype.supply_area_distance * 2),
-        width = size.width + (prototype.supply_area_distance * 2),
+        height = size.height + (prototype.get_supply_area_distance() * 2),
+        width = size.width + (prototype.get_supply_area_distance() * 2),
       },
       energy_usage = prototype.energy_usage,
       entity_type = { class = "entity_type", name = prototype.type },

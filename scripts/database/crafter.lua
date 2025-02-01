@@ -2,7 +2,7 @@ local util = require("scripts.util")
 
 return function(database, metadata)
   -- Characters as crafters
-  for name, prototype in pairs(global.prototypes.character) do
+  for name, prototype in pairs(storage.prototypes.character) do
     local ingredient_limit = prototype.ingredient_count
     if ingredient_limit == 255 then
       ingredient_limit = nil
@@ -35,7 +35,7 @@ return function(database, metadata)
   metadata.crafter_fluidbox_counts = {}
   metadata.fixed_recipes = {}
   local rocket_silo_categories = util.unique_obj_array()
-  for name, prototype in pairs(global.prototypes.crafter) do
+  for name, prototype in pairs(storage.prototypes.crafter) do
     -- Fixed recipe
     local fixed_recipe
     if prototype.fixed_recipe then
@@ -72,7 +72,7 @@ return function(database, metadata)
       metadata.crafter_fluidbox_counts[name] = fluidbox_counts
     end
 
-    local is_hidden = prototype.has_flag("hidden")
+    local is_hidden = prototype.hidden
     local fuel_categories, fuel_filter = util.process_energy_source(prototype)
     database.entity[name] = {
       accepted_modules = {},
@@ -80,7 +80,8 @@ return function(database, metadata)
       can_burn = {},
       can_craft = {},
       class = "entity",
-      crafting_speed = prototype.crafting_speed,
+      -- GrP fixme quality
+      crafting_speed = prototype.get_crafting_speed(),
       entity_type = { class = "entity_type", name = prototype.type },
       fixed_recipe = fixed_recipe,
       fuel_categories = fuel_categories,

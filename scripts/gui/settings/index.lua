@@ -1,4 +1,4 @@
-local gui = require("__flib__.gui")
+local gui = require("old-flib-gui")
 local table = require("__flib__.table")
 
 local constants = require("constants")
@@ -130,7 +130,7 @@ function Gui:update_contents(tab)
     local class_settings = actual_settings.categories[selected_class]
     local class_translations = translations[selected_class]
     local children = {}
-    for category_name in pairs(global.database[selected_class]) do
+    for category_name in pairs(storage.database[selected_class]) do
       local category_translation = class_translations[category_name] or category_name
       if string.find(string.lower(category_translation), query) then
         local img_type = constants.class_to_type[selected_class]
@@ -347,7 +347,7 @@ function index.build(player, player_table)
       },
       {
         type = "frame",
-        style = "inside_deep_frame_for_tabs",
+        style = "rb_inside_deep_frame_for_tabs",
         direction = "vertical",
         {
           type = "tabbed-pane",

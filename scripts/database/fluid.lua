@@ -8,7 +8,7 @@ local fluid_proc = {}
 
 function fluid_proc.build(database, metadata)
   local localised_fluids = {}
-  for name, prototype in pairs(global.prototypes.fluid) do
+  for name, prototype in pairs(storage.prototypes.fluid) do
     -- Group
     local group = prototype.group
     local group_data = database.group[group.name]

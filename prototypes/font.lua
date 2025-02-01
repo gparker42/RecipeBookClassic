@@ -1,8 +1,8 @@
 data:extend({
   {
     type = "font",
-    name = "RecipeBook",
-    from = "RecipeBook",
+    name = "RecipeBookClassic",
+    from = "RecipeBookClassic",
     size = 12,
     filtered = true,
   },

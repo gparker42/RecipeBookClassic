@@ -1,4 +1,4 @@
-local gui = require("__flib__.gui")
+local gui = require("old-flib-gui")
 local table = require("__flib__.table")
 
 local constants = require("constants")
@@ -100,7 +100,7 @@ function Gui:update_visual_contents()
   local groups = {}
 
   for _, objects in pairs(
-    { global.database.item, global.database.fluid }
+    { storage.database.item, storage.database.fluid }
     -- { database.recipe }
   ) do
     for name, object in pairs(objects) do
@@ -112,7 +112,7 @@ function Gui:update_visual_contents()
           button = {
             type = "sprite-button",
             name = group.name,
-            style = "rb_filter_group_button_tab",
+            -- style = "rb_filter_group_button_tab",
             sprite = "item-group/" .. group.name,
             tooltip = { "item-group-name." .. group.name },
             actions = {
@@ -324,7 +324,7 @@ function index.build(player, player_table)
         },
         {
           type = "frame",
-          style = "inside_deep_frame_for_tabs",
+          style = "rb_inside_deep_frame_for_tabs",
           direction = "vertical",
           ref = { "tab_frame" },
           {
@@ -384,7 +384,7 @@ function index.build(player, player_table)
                   ref = { "visual_results_flow" },
                   {
                     type = "table",
-                    style = "filter_group_table",
+                    style = "rb_filter_group_table",
                     style_mods = { width = 426 },
                     column_count = 6,
                     ref = { "group_table" },

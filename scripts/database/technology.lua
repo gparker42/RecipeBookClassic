@@ -32,7 +32,7 @@ local function insert_science_packs(database, obj_data, science_packs)
 end
 
 return function(database, metadata)
-  for name, prototype in pairs(global.prototypes.technology) do
+  for name, prototype in pairs(storage.prototypes.technology) do
     local unlocks_equipment = util.unique_obj_array()
     local unlocks_fluids = util.unique_obj_array()
     local unlocks_items = util.unique_obj_array()
@@ -43,7 +43,7 @@ return function(database, metadata)
     -- Research units and ingredients per unit
     for _, ingredient in ipairs(prototype.research_unit_ingredients) do
       research_ingredients_per_unit[#research_ingredients_per_unit + 1] = {
-        class = ingredient.type,
+        class = "item", --ingredient.type,
         name = ingredient.name,
         amount_ident = util.build_amount_ident({ amount = ingredient.amount }),
       }
@@ -164,7 +164,7 @@ return function(database, metadata)
 
   -- Generate prerequisites and prerequisite_of
   for name, technology in pairs(database.technology) do
-    local prototype = global.prototypes.technology[name]
+    local prototype = storage.prototypes.technology[name]
 
     if prototype.prerequisites then
       for prerequisite_name in pairs(prototype.prerequisites) do

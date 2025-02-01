@@ -16,10 +16,24 @@ local properties_by_type = {
   ["night-vision-equipment"] = { { "energy_consumption", "energy" } },
   ["roboport-equipment"] = { { "energy_consumption", "energy" } },
   ["solar-panel-equipment"] = { { "energy_production", "energy" } },
+  -- GrP fixme new
+  ["equipment-ghost"] = {},
 }
 
 local function get_equipment_property(properties, source, name, formatter, label)
-  local value = source[name]
+  local value
+  -- GrP fixme quality
+  if name == "energy_consumption" then
+    value = source.get_energy_consumption()
+  elseif name == "movement_bonus" then
+    value = source.get_movement_bonus()
+  elseif name == "shield" then
+    value = source.get_shield()
+  elseif name == "inventory_bonus" then
+    value = source.get_inventory_bonus()
+  else
+    value = source[name]
+  end
   if value and value > 0 then
     table.insert(properties, {
       type = "plain",
@@ -32,7 +46,7 @@ end
 
 return function(database)
   --- @type table<string, LuaEquipmentPrototype>
-  local prototypes = global.prototypes.equipment
+  local prototypes = storage.prototypes.equipment
   for name, prototype in pairs(prototypes) do
     local fuel_categories
     local burner = prototype.burner_prototype
@@ -52,7 +66,7 @@ return function(database)
     end
 
     local energy_source = prototype.energy_source
-    if energy_source then
+    if energy_source and energy_source.valid then
       get_equipment_property(properties, energy_source, "buffer_capacity", "energy_storage")
     end
 

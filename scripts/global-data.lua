@@ -5,28 +5,28 @@ local constants = require("constants")
 local global_data = {}
 
 function global_data.init()
-  global.forces = {}
-  global.players = {}
-  global.prototypes = {}
+  storage.forces = {}
+  storage.players = {}
+  storage.prototypes = {}
 end
 
 function global_data.build_prototypes()
-  global.forces = table.shallow_copy(game.forces)
+  storage.forces = table.shallow_copy(game.forces)
 
-  local prototypes = {}
+  local new_prototypes = {}
 
   for key, filters in pairs(constants.prototypes.filtered_entities) do
-    prototypes[key] = table.shallow_copy(game.get_filtered_entity_prototypes(filters))
+    new_prototypes[key] = table.shallow_copy(prototypes.get_entity_filtered(filters))
   end
   for _, type in pairs(constants.prototypes.straight_conversions) do
-    prototypes[type] = table.shallow_copy(game[type .. "_prototypes"])
+    new_prototypes[type] = table.shallow_copy(prototypes[type])
   end
 
-  global.prototypes = prototypes
+  storage.prototypes = new_prototypes
 end
 
 function global_data.update_sync_data()
-  global.sync_data = {
+  storage.sync_data = {
     active_mods = script.active_mods,
     settings = table.map(settings.startup, function(v)
       return v
@@ -35,7 +35,7 @@ function global_data.update_sync_data()
 end
 
 function global_data.add_force(force)
-  table.insert(global.forces, force)
+  table.insert(storage.forces, force)
 end
 
 return global_data

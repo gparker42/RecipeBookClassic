@@ -3,7 +3,7 @@ local util = require("scripts.util")
 local equipment_category_proc = {}
 
 function equipment_category_proc.build(database)
-  for name, prototype in pairs(global.prototypes.equipment_category) do
+  for name, prototype in pairs(storage.prototypes.equipment_category) do
     database.equipment_category[name] = {
       class = "equipment_category",
       enabled_at_start = true,

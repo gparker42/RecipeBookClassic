@@ -3,7 +3,7 @@ local util = require("scripts.util")
 
 return function(database)
   --- @type LuaCustomTable<string, LuaEntityPrototype>
-  local prototypes = global.prototypes.resource
+  local prototypes = storage.prototypes.resource
   for name, prototype in pairs(prototypes) do
     local products = prototype.mineable_properties.products
     if products then
@@ -51,7 +51,7 @@ return function(database)
 
     local mined_by = {}
     local resource_category = prototype.resource_category
-    for drill_name in pairs(global.prototypes.mining_drill) do
+    for drill_name in pairs(storage.prototypes.mining_drill) do
       local drill_data = database.entity[drill_name]
       if
         drill_data.resource_categories_lookup[resource_category]

@@ -71,7 +71,8 @@ local function number(value)
 end
 
 local function temperature(value, gui_translations)
-  return expand_string(gui_translations.format_degrees, number(value))
+  -- GrP fixme is fahrenheit an option somewhere?
+  return number(value) .. " " .. gui_translations.degrees_C
 end
 
 local function area(value, gui_translations)
@@ -112,7 +113,7 @@ local function per_second(value, gui_translations)
 end
 
 local function object(obj, _, player_data, options)
-  local obj_data = global.database[obj.class][obj.name]
+  local obj_data = storage.database[obj.class][obj.name]
   local obj_options = options and table.shallow_copy(options) or {}
   obj_options.amount_ident = obj.amount_ident
   local info = formatter(obj_data, player_data, obj_options)
@@ -198,7 +199,7 @@ local function get_caption(obj_data, obj_properties, player_data, options)
   if settings.general.captions.show_glyphs and not options.hide_glyph then
     before = rich_text(
       "font",
-      "RecipeBook",
+      "RecipeBookClassic",
       constants.class_to_font_glyph[class] or constants.class_to_font_glyph[class]
     ) .. "  "
   end
@@ -601,7 +602,7 @@ function formatter.create_cache(player_index)
 end
 
 function formatter.create_all_caches()
-  for i in pairs(global.players) do
+  for i in pairs(storage.players) do
     caches[i] = {}
   end
 end

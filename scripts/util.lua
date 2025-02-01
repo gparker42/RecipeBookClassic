@@ -1,5 +1,5 @@
 local bounding_box = require("__flib__.bounding-box")
-local dictionary = require("__flib__.dictionary-lite")
+local dictionary = require("__flib__.dictionary")
 local format = require("__flib__.format")
 local math = require("__flib__.math")
 local table = require("__flib__.table")
@@ -123,12 +123,21 @@ function util.unique_obj_array(initial_tbl)
 end
 
 function util.frame_action_button(sprite, tooltip, ref, action)
+  -- Use "sprite_white" and "sprite_black" if available,
+  -- otherwise fall back to just "sprite".
+  -- Some builtin sprites in factorio-2.0 like "utility/search"
+  -- no longer come in explicit _white and _black forms.
+  local white = sprite .. "_white"
+  local black = sprite .. "_black"
+  local sprite_white = helpers.is_valid_sprite_path(white) and white or sprite
+  local sprite_black = helpers.is_valid_sprite_path(black) and black or sprite
+
   return {
     type = "sprite-button",
     style = "frame_action_button",
-    sprite = sprite .. "_white",
-    hovered_sprite = sprite .. "_black",
-    clicked_sprite = sprite .. "_black",
+    sprite = sprite_white,
+    hovered_sprite = sprite_black,
+    clicked_sprite = sprite_black,
     tooltip = tooltip,
     mouse_button_filter = { "left" },
     ref = ref,
@@ -195,7 +204,7 @@ end
 --- @param gui_name string
 --- @param gui_key number|string?
 function util.get_gui(player_index, gui_name, gui_key)
-  local player_table = global.players[player_index]
+  local player_table = storage.players[player_index]
   if not player_table then
     return
   end
@@ -216,7 +225,7 @@ end
 --- @param gui_name string
 --- @param msg string|table
 function util.dispatch_all(player_index, gui_name, msg)
-  local player_table = global.players[player_index]
+  local player_table = storage.players[player_index]
   if not player_table then
     return
   end
@@ -235,7 +244,7 @@ function util.is_blueprintable(prototype)
   return prototype.has_flag("player-creation")
     and not prototype.has_flag("not-selectable-in-game")
     and not prototype.has_flag("not-blueprintable")
-    and not prototype.has_flag("hidden")
+    and not prototype.hidden
 end
 
 --- Create a new dictionary only if not in on_load.

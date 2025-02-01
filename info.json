@@ -1,13 +1,13 @@
 {
-  "name": "RecipeBook",
-  "version": "3.5.11",
-  "title": "Recipe Book",
-  "author": "raiguard",
-  "description": "Search for information about entities, fluids, items, recipes, and technologies in a clean, easy-to-use interface. Similar to FNEI and What is it Really Used For.",
-  "contact": "https://github.com/raiguard/RecipeBook",
-  "homepage": "https://github.com/raiguard/RecipeBook",
-  "factorio_version": "1.1",
-  "dependencies": ["base >= 1.1.80", "flib >= 0.12.9"],
+  "name": "RecipeBookClassic",
+  "version": "1.1.1",
+  "title": "Recipe Book (Classic Remaster)",
+  "author": "gparker, raiguard",
+  "description": "Search for information about entities, fluids, items, recipes, and technologies in a clean, easy-to-use interface. Based on raiguard's Recipe Book version 3.",
+  "contact": "https://github.com/gparker42/RecipeBook",
+  "homepage": "https://github.com/gparker42/RecipeBook",
+  "factorio_version": "2.0",
+  "dependencies": ["base >= 1.1.80", "flib >= 0.15.0", "!RecipeBook"],
   "package": {
     "git_publish_branch": "master",
     "ignore": ["imgui.ini", "resources", "screenshots"]

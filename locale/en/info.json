@@ -1,6 +1,6 @@
 {
   "language-name": "English",
   "font": {
-    "RecipeBook": ["__RecipeBook__/fonts/RecipeBook.ttf"]
+    "RecipeBookClassic": ["__RecipeBookClassic__/fonts/RecipeBook.ttf"]
   }
 }

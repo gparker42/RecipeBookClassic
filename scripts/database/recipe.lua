@@ -7,7 +7,7 @@ local util = require("scripts.util")
 local fluid_proc = require("scripts.database.fluid")
 
 return function(database, metadata)
-  for name, prototype in pairs(global.prototypes.recipe) do
+  for name, prototype in pairs(storage.prototypes.recipe) do
     local category = prototype.category
     local group = prototype.group
 
@@ -102,7 +102,7 @@ return function(database, metadata)
         num_item_ingredients = num_item_ingredients + 1
       end
     end
-    for _, crafters in pairs({ global.prototypes.character, global.prototypes.crafter }) do
+    for _, crafters in pairs({ storage.prototypes.character, storage.prototypes.crafter }) do
       for crafter_name in pairs(crafters) do
         local crafter_data = database.entity[crafter_name]
         local fluidbox_counts = metadata.crafter_fluidbox_counts[crafter_name] or { inputs = 0, outputs = 0 }
@@ -124,12 +124,16 @@ return function(database, metadata)
     end
 
     -- Compatible modules
-    for module_name, module_limitations in pairs(metadata.modules) do
-      if not next(module_limitations) or module_limitations[name] then
-        data.accepted_modules[#data.accepted_modules + 1] = { class = "item", name = module_name }
-        table.insert(database.item[module_name].affects_recipes, { class = "recipe", name = name })
-      end
-    end
+    -- GrP fixme recipe/module links have inverted in 2.0
+    -- for module_category_name, _ in pairs(prototype.allowed_module_categories or {}) do
+    --   log("GrP recipe " .. name .. " module category " .. module_category_name)
+    -- end
+    -- for module_name, module_limitations in pairs(metadata.modules) do
+    --   if not next(module_limitations) or module_limitations[name] then
+    --     data.accepted_modules[#data.accepted_modules + 1] = { class = "item", name = module_name }
+    --     table.insert(database.item[module_name].affects_recipes, { class = "recipe", name = name })
+    --   end
+    -- end
 
     database.recipe[name] = data
     util.add_to_dictionary("recipe", name, prototype.localised_name)

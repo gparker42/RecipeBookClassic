@@ -1,4 +1,4 @@
-local gui = require("__flib__.gui")
+local gui = require("old-flib-gui")
 local table = require("__flib__.table")
 
 local formatter = require("scripts.formatter")
@@ -125,7 +125,7 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
               index = i,
             })
           end
-          local source_data = global.database[value.class][value.name]
+          local source_data = storage.database[value.class][value.name]
           local options = table.shallow_copy(row.options or {})
           options.label_only = true
           options.amount_ident = value.amount_ident

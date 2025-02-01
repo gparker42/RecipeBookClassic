@@ -5,7 +5,7 @@ local util = require("scripts.util")
 local lab_proc = {}
 
 function lab_proc.build(database)
-  for name, prototype in pairs(global.prototypes.lab) do
+  for name, prototype in pairs(storage.prototypes.lab) do
     local fuel_categories, fuel_filter = util.process_energy_source(prototype)
     database.entity[name] = {
       blueprintable = util.is_blueprintable(prototype),
@@ -14,7 +14,7 @@ function lab_proc.build(database)
       entity_type = { class = "entity_type", name = prototype.type },
       fuel_categories = fuel_categories,
       fuel_filter = fuel_filter,
-      hidden = prototype.has_flag("hidden"),
+      hidden = prototype.hidden,
       inputs = table.map(prototype.lab_inputs, function(v)
         return { class = "item", name = v }
       end),
@@ -24,7 +24,8 @@ function lab_proc.build(database)
         or nil,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
-      researching_speed = prototype.researching_speed,
+      -- GrP fixme quality
+      researching_speed = prototype.get_researching_speed(),
       science_packs = {},
       size = util.get_size(prototype),
       unlocked_by = {},
@@ -36,7 +37,7 @@ end
 
 -- Store labs in science pack items' researched_in
 function lab_proc.process_researched_in(database)
-  for name, prototype in pairs(global.prototypes.lab) do
+  for name, prototype in pairs(storage.prototypes.lab) do
     -- Add to items
     for _, item_name in ipairs(prototype.lab_inputs) do
       local item_data = database.item[item_name]
