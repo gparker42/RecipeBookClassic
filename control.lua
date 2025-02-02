@@ -12,6 +12,7 @@ local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
 local remote_interface = require("scripts.remote-interface")
 local util = require("scripts.util")
+local gui_util = require("scripts.gui.util")
 
 -- -----------------------------------------------------------------------------
 -- GLOBALS
@@ -318,6 +319,54 @@ script.on_event(defines.events.on_gui_click, function(e)
       end
     end
   end
+end)
+
+-- Enable stock pipette control on RecipeBook GUI
+-- 1. on_gui_hover and on_gui_leave record the LuaGuiElement where the cursor is
+-- 2. rb-linked-pipette event responds to stock pipette control
+-- 3. rb-linked-pipette assumes the pipette event occurred over the hovered element, if any
+-- 4. if the pipetted element is one of ours and has a blueprint_result, pipette it
+
+script.on_event(defines.events.on_gui_hover, function(e)
+  if e.element:get_mod() ~= script.mod_name then
+    -- hovered GUI is not one of ours
+    return
+  end
+
+  -- game.print("GrP hover enter " .. game.tick)
+  local player_table = storage.players[e.player_index]
+  player_table.hover_element = e.element
+end)
+
+script.on_event(defines.events.on_gui_leave, function(e)
+  if e.element:get_mod() ~= script.mod_name then
+    -- hovered GUI is not one of ours
+    return
+  end
+
+  -- game.print("GrP hover exit " .. game.tick)
+
+  -- exit-previous sometimes delivers after enter-next
+  -- so don't overwrite hover_element if exit-previous is late.
+  -- This assumes that hover-able elements are not nested.
+  local player_table = storage.players[e.player_index]
+  if player_table.hover_element == e.element then
+    player_table.hover_element = nil
+  end
+end)
+
+script.on_event({ "rb-linked-pipette" }, function(e)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  local player_table = storage.players[e.player_index]
+  local element = player_table.hover_element
+  if not element or not element.valid then
+    return  -- pipette is not hovered over any GUI element
+  end
+  if element:get_mod() ~= script.mod_name then
+    return  -- hovered GUI is not one of ours
+  end
+
+  gui_util.perform_pipette(player, gui.get_tags(element))
 end)
 
 script.on_event(defines.events.on_gui_closed, function(e)

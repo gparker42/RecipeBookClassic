@@ -129,8 +129,7 @@ function table_comp.update(component, refs, object_data, player_data, settings, 
           local options = table.shallow_copy(row.options or {})
           options.label_only = true
           options.amount_ident = value.amount_ident
-          options.blueprint_result = value.class == "entity" and source_data.blueprintable and { name = value.name }
-            or nil
+          options.blueprint_result = source_data.blueprint_result
           local info = formatter(source_data, player_data, options)
           if info then
             button.caption = info.caption

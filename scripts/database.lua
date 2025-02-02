@@ -71,7 +71,7 @@ function database.new()
 
   item(self, metadata) -- requires all entities
 
-  recipe(self, metadata)
+  recipe(self, metadata) -- requires items and entities
   resource(self)
   technology(self, metadata)
 

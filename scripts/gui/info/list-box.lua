@@ -85,12 +85,21 @@ function list_box.update(component, refs, context_data, player_data, settings, v
 
     if matched then
       local obj_data = storage.database[obj.class][obj.name]
+      local entity_data_for_obj = storage.database.entity_type[obj.name]
       local blueprint_result
-      if context.class == "recipe" and component.source == "made_in" and obj_data.blueprintable then
+      -- Recipe pane > Made in: blueprint is the clicked entity configured with the pane's recipe
+      -- Entity pane > Can craft: blueprint is the pane's entity configured with the clicked recipe
+      -- Everything else: use the clicked object's blueprint
+      if context.class == "recipe" and component.source == "made_in" and obj_data.blueprint_result then
         blueprint_result = { name = obj.name, recipe = context.name }
-      elseif context.class == "entity" and component.source == "can_craft" and context_data.blueprintable then
+      elseif context.class == "entity" and component.source == "can_craft" and context_data.blueprint_result then
         blueprint_result = { name = context.name, recipe = obj.name }
+      elseif obj_data.blueprint_result then
+        blueprint_result = obj_data.blueprint_result
+      else
+        -- game.print("GrP can't blueprint object " .. obj.class .. " " .. obj.name)
       end
+
       local info = formatter(obj_data, player_data, {
         always_show = always_show,
         amount_ident = obj.amount_ident,
@@ -109,10 +118,13 @@ function list_box.update(component, refs, context_data, player_data, settings, v
           item.enabled = info.num_interactions > 0
           gui.update_tags(
             item,
-            { blueprint_result = blueprint_result, context = { class = obj.class, name = obj.name } }
+            {
+              blueprint_result = blueprint_result,
+              context = { class = obj.class, name = obj.name },
+            }
           )
         else
-          gui.add(scroll, {
+          item = gui.add(scroll, {
             type = "button",
             style = style,
             caption = info.caption,
@@ -128,6 +140,8 @@ function list_box.update(component, refs, context_data, player_data, settings, v
             },
           })
         end
+        -- If the element has a blueprint, send hover events so it can be pipetted.
+        item.raise_hover_events = (blueprint_result ~= nil)
       end
     end
   end

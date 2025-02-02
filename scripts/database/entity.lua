@@ -45,7 +45,7 @@ return function(database, metadata)
 
     database.entity[name] = {
       accepted_equipment = equipment,
-      blueprintable = util.is_blueprintable(prototype),
+      blueprint_result = util.build_blueprint_result(prototype),
       can_burn = {},
       class = "entity",
       enabled_at_start = expected_resources and true or false, -- FIXME: This is inaccurate

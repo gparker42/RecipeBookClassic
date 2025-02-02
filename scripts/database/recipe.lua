@@ -95,6 +95,17 @@ return function(database, metadata)
       data[io_type] = output
     end
 
+    -- Blueprint result
+    --   In some contexts the blueprint result of a recipe is a
+    --   crafter entity with this recipe configured (handled elsewhere).
+    --   Here we prepare the other case:
+    --   the blueprint result is derived from the recipe's main product,
+    --   if that product is an item that has its own blueprint result.
+    if prototype.main_product and prototype.main_product.type == "item" then
+      local item = database.item[prototype.main_product.name]
+      data.blueprint_result = item and item.blueprint_result or nil
+    end
+
     -- Made in
     local num_item_ingredients = 0
     for _, ingredient in pairs(prototype.ingredients) do

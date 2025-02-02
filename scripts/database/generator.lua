@@ -18,7 +18,7 @@ return function(database)
     end
     database.entity[name] = {
       base_pollution = pollution, -- prototype.emissions_per_second > 0 and prototype.emissions_per_second or nil,
-      blueprintable = util.is_blueprintable(prototype),
+      blueprint_result = util.build_blueprint_result(prototype),
       can_burn = can_burn,
       class = "entity",
       entity_type = { class = "entity_type", name = prototype.type },

@@ -7,7 +7,7 @@ return function(database, metadata)
 
     database.entity[name] = {
       accepted_modules = {},
-      blueprintable = util.is_blueprintable(prototype),
+      blueprint_result = util.build_blueprint_result(prototype),
       class = "entity",
       distribution_effectivity = prototype.distribution_effectivity,
       -- GrP fixme quality

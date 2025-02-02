@@ -8,7 +8,7 @@ function lab_proc.build(database)
   for name, prototype in pairs(storage.prototypes.lab) do
     local fuel_categories, fuel_filter = util.process_energy_source(prototype)
     database.entity[name] = {
-      blueprintable = util.is_blueprintable(prototype),
+      blueprint_result = util.build_blueprint_result(prototype),
       can_burn = {},
       class = "entity",
       entity_type = { class = "entity_type", name = prototype.type },

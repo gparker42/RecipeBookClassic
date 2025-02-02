@@ -82,7 +82,16 @@ function Gui:update_contents()
     local i = 0
     for _, object in pairs(recipe_data[source]) do
       local object_data = storage.database[object.class][object.name]
-      local blueprint_result = source == "made_in" and { name = object.name, self.recipe_name } or nil
+      -- "Made in" blueprint is crafter entity with a configured recipe. Other blueprints are just the object.
+      local blueprint_result
+      if source == "made_in" and object_data.blueprint_result then
+        blueprint_result = { name = object.name, recipe = self.recipe_name }
+      else
+        blueprint_result = object_data.blueprint_result
+      end
+      -- If the button has a blueprint, send hover events so it can be pipetted.
+      local raise_hover_events = (blueprint_result ~= nil)
+
       local object_info = formatter(object_data, player_data, {
         always_show = source ~= "made_in",
         amount_ident = object.amount_ident,
@@ -105,6 +114,7 @@ function Gui:update_contents()
             context = object,
             researched = object_data.researched,
           })
+          button.raise_hover_events = raise_hover_events
         else
           local probability = object.amount_ident.probability
           if probability == 1 then
@@ -121,6 +131,7 @@ function Gui:update_contents()
                 context = object,
                 researched = object_data.researched,
               },
+              raise_hover_events = raise_hover_events,
               actions = {
                 on_click = {
                   gui = "quick_ref",

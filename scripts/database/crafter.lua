@@ -9,12 +9,13 @@ return function(database, metadata)
     end
     database.entity[name] = {
       accepted_modules = {}, -- Always empty
-      blueprintable = false,
+      blueprint_result = nil,  -- character is not a blueprintable entity
       can_burn = {}, -- Always empty
       can_craft = {},
       class = "entity",
       crafting_speed = 1,
       enabled = true,
+      enabled_at_start = true,
       entity_type = { class = "entity_type", name = prototype.type },
       hidden = false,
       ingredient_limit = ingredient_limit,
@@ -76,7 +77,7 @@ return function(database, metadata)
     local fuel_categories, fuel_filter = util.process_energy_source(prototype)
     database.entity[name] = {
       accepted_modules = {},
-      blueprintable = util.is_blueprintable(prototype),
+      blueprint_result = util.build_blueprint_result(prototype),
       can_burn = {},
       can_craft = {},
       class = "entity",

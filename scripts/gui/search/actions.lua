@@ -219,7 +219,7 @@ function actions.update_search_results(Gui, _, _)
               end
 
               if passed then
-                local blueprint_result = class == "entity" and obj_data.blueprintable and { name = internal } or nil
+                local blueprint_result = obj_data.blueprint_result
                 local info = formatter(obj_data, player_data, { blueprint_result = blueprint_result })
                 if info then
                   i = i + 1
@@ -235,7 +235,7 @@ function actions.update_search_results(Gui, _, _)
                       { blueprint_result = blueprint_result, context = { class = class, name = internal } }
                     )
                   else
-                    gui.add(pane, {
+                    item = gui.add(pane, {
                       type = "button",
                       style = style,
                       caption = info.caption,
@@ -254,6 +254,8 @@ function actions.update_search_results(Gui, _, _)
                       break
                     end
                   end
+                  -- If the element has a blueprint, send hover events so it can be pipetted.
+                  item.raise_hover_events = (blueprint_result ~= nil)
                 end
               end
             end

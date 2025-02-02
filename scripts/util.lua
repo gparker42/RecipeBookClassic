@@ -247,6 +247,16 @@ function util.is_blueprintable(prototype)
     and not prototype.hidden
 end
 
+--- @param prototype LuaEntityPrototype
+function util.build_blueprint_result(prototype)
+  if (not prototype or
+      not prototypes.entity[prototype.name] or
+      not util.is_blueprintable(prototype)) then
+    return nil
+  end
+  return { name = prototype.name }
+end
+
 --- Create a new dictionary only if not in on_load.
 --- @param name string
 --- @param initial_contents Dictionary?

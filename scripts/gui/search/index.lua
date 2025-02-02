@@ -156,7 +156,7 @@ function Gui:update_visual_contents()
       end
 
       if matched then
-        local blueprint_result = object.place_result and { name = object.place_result.name } or nil
+        local blueprint_result = object.blueprint_result
         local formatted = formatter(object, player_data, { blueprint_result = blueprint_result })
         if formatted then
           group_table.members = group_table.members + 1
@@ -177,6 +177,8 @@ function Gui:update_visual_contents()
               blueprint_result = blueprint_result,
               context = { class = object.class, name = name },
             },
+            -- If the element has a blueprint, send hover events so it can be pipetted.
+            raise_hover_events = (blueprint_result ~= nil),
             actions = {
               on_click = { gui = "search", action = "open_object" },
             },

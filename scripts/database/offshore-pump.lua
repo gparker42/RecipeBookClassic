@@ -14,7 +14,7 @@ function offshore_pump_proc.build(database)
     -- end
 
     database.entity[name] = {
-      blueprintable = util.is_blueprintable(prototype),
+      blueprint_result = util.build_blueprint_result(prototype),
       class = "entity",
       enabled = true,
       entity_type = { class = "entity_type", name = prototype.type },

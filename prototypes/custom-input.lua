@@ -37,4 +37,11 @@ data:extend({
     key_sequence = "",
     linked_game_control = "focus-search",
   },
+  {
+    type = "custom-input",
+    name = "rb-linked-pipette",
+    key_sequence = "",
+    linked_game_control = "pipette",
+    include_selected_prototype = true,
+  },
 })

@@ -42,12 +42,16 @@ function item_proc.build(database, metadata)
       place_as_equipment_results[name] = place_as_equipment_result
     end
 
+    -- Not all placement result entities are represented in database.entity[].
+    -- place_result is a valid ident in the database, or nil
+    -- blueprint_result may be missing from the database
+    local blueprint_result = util.build_blueprint_result(prototype.place_result)
     local place_result = prototype.place_result
     if place_result and database.entity[place_result.name] then
       place_result = { class = "entity", name = place_result.name }
       place_results[name] = place_result
     else
-      place_result = nil
+      place_result = nil  -- not represented in the database
     end
 
     local burnt_result = prototype.burnt_result
@@ -137,6 +141,7 @@ function item_proc.build(database, metadata)
     database.item[name] = {
       accepted_equipment = equipment,
       affects_recipes = {},
+      blueprint_result = blueprint_result,
       burned_in = {},
       burnt_result = burnt_result,
       burnt_result_of = {},

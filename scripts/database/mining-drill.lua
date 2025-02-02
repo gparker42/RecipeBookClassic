@@ -11,7 +11,7 @@ function mining_drill_proc.build(database)
 
     local fuel_categories, fuel_filter = util.process_energy_source(prototype)
     database.entity[name] = {
-      blueprintable = util.is_blueprintable(prototype),
+      blueprint_result = util.build_blueprint_result(prototype),
       can_burn = {},
       class = "entity",
       enabled = true,
