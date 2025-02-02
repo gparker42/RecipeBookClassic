@@ -213,10 +213,6 @@ function database:handle_research_updated(technology, to_value, skip_research_in
   end
 end
 
-local function get_science_sorting_number(obj_data)
-  return (obj_data.science_packs and #obj_data.science_packs or 9999)
-end
-
 function science_comparator(db, force, lhs_ident, rhs_ident)
   local lhs_data = db[lhs_ident.class][lhs_ident.name]
   local rhs_data = db[rhs_ident.class][rhs_ident.name]
@@ -226,13 +222,6 @@ function science_comparator(db, force, lhs_ident, rhs_ident)
   local rhs_miss = rhs_data.research_ingredients_missing[force.index]
   if lhs_miss ~= rhs_miss then
     return lhs_miss < rhs_miss
-  end
-
-  -- sort by total science packs required
-  local lhs_sci = get_science_sorting_number(lhs_data)
-  local rhs_sci = get_science_sorting_number(rhs_data)
-  if lhs_sci ~= rhs_sci then
-    return lhs_sci < rhs_sci
   end
 
   -- sort by name
