@@ -148,11 +148,12 @@ function database:handle_research_updated(technology, to_value)
         update_launch_products(self, obj_data.rocket_launch_products, force_index, to_value)
       elseif class == "offshore_pump" then
         -- Unlock pumped fluid
-        local fluid = obj_data.fluid
-        local fluid_data = self.fluid[fluid.name]
-        if fluid_data.researched_forces then
-          fluid_data.researched_forces[force_index] = to_value
-        end
+        -- GrP fixme probably broken in 2.0, see offshore-pump.lua
+        -- local fluid = obj_data.fluid
+        -- local fluid_data = self.fluid[fluid.name]
+        -- if fluid_data.researched_forces then
+        --   fluid_data.researched_forces[force_index] = to_value
+        -- end
       end
     end
   end
