@@ -347,7 +347,7 @@ function index.build(player, player_table)
       },
       {
         type = "frame",
-        style = "rb_inside_deep_frame_for_tabs",
+        style = "inside_deep_frame",
         direction = "vertical",
         {
           type = "tabbed-pane",

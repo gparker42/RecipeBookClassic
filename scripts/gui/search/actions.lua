@@ -317,9 +317,8 @@ function actions.update_search_results(Gui, _, _)
       local group_name = group_scroll.name
       local group_button = group_table[group_name]
       if group_has_results then
-        -- GrP fixme was filter_group_button_tab
-        -- group_button.style = "rb_filter_group_button_tab"
-        -- group_button.enabled = state.active_group ~= group_scroll.name
+        group_button.style = "rb_filter_group_button_tab"
+        group_button.enabled = state.active_group ~= group_scroll.name
         if state.active_group == group_name then
           group_scroll.visible = true
         else
@@ -327,8 +326,8 @@ function actions.update_search_results(Gui, _, _)
         end
       else
         group_scroll.visible = false
-        -- group_button.style = "rb_disabled_filter_group_button_tab"
-        -- group_button.enabled = false
+        group_button.style = "rb_disabled_filter_group_button_tab"
+        group_button.enabled = false
         if state.active_group == group_name then
           local matched = false
           for _, group_button in pairs(group_table.children) do

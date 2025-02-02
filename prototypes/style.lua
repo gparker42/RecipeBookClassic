@@ -38,26 +38,67 @@ styles.rb_table_button = {
   left_margin = -8,
 }
 
--- GrP fixme filter_group_button_tab no longer exists
---
---styles.rb_filter_group_button_tab = {
---  type = "button_style",
---  parent = "filter_group_button_tab",
---  width = 0,
---  horizontally_stretchable = "on",
---  disabled_graphical_set = styles.button.selected_graphical_set,
---}
---
---styles.rb_disabled_filter_group_button_tab = {
---  type = "button_style",
---  parent = "filter_group_button_tab",
---  width = 0,
---  horizontally_stretchable = "on",
---  draw_grayscale_picture = true,
---  default_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
---  hovered_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
---  clicked_graphical_set = styles.filter_group_button_tab.disabled_graphical_set,
---}
+-- GrP fixme adopt 2.0 tab and tabbed-pane
+
+-- GrP fixme copied from 1.x factorio-data/core/prototypes.style.lua
+styles.rb_filter_group_button_tab_parent = {
+  type = "button_style",
+  parent = "button",
+  size = {71, 72}, --warning: width does not respect module size, but the current design requires it
+  left_padding = 3,
+  right_padding = 4,
+  top_padding = 4,
+  bottom_padding = 4, -- so there is exactly 64X64 space for the icon
+
+  clicked_vertical_offset = 0,
+  selected_graphical_set =
+  {
+    base = {position = {363, 744}, corner_size = 8},
+    shadow = offset_by_2_default_glow(default_dirt_color, 0.5)
+  },
+  disabled_graphical_set =
+  {
+    base = {position = {208, 17}, corner_size = 8},
+    shadow = default_dirt
+  },
+  selected_font_color = button_hovered_font_color,
+  selected_graphical_set =
+  {
+    base = {position = {363, 744}, corner_size = 8},
+    shadow = offset_by_2_default_glow(default_dirt_color, 0.5)
+  },
+  selected_hovered_font_color = button_hovered_font_color,
+  selected_hovered_graphical_set =
+  {
+    base = {position = {363, 744}, corner_size = 8},
+    shadow = offset_by_2_default_glow(default_dirt_color, 0.5)
+  },
+  selected_clicked_font_color = button_hovered_font_color,
+  selected_clicked_graphical_set =
+  {
+    base = {position = {363, 744}, corner_size = 8},
+    shadow = offset_by_2_default_glow(default_dirt_color, 0.5)
+  }
+}
+
+styles.rb_filter_group_button_tab = {
+  type = "button_style",
+  parent = "rb_filter_group_button_tab_parent",
+  width = 0,
+  horizontally_stretchable = "on",
+  disabled_graphical_set = styles.button.selected_graphical_set,
+}
+
+styles.rb_disabled_filter_group_button_tab = {
+  type = "button_style",
+  parent = "rb_filter_group_button_tab_parent",
+  width = 0,
+  horizontally_stretchable = "on",
+  draw_grayscale_picture = true,
+  default_graphical_set = styles.rb_filter_group_button_tab.disabled_graphical_set,
+  hovered_graphical_set = styles.rb_filter_group_button_tab.disabled_graphical_set,
+  clicked_graphical_set = styles.rb_filter_group_button_tab.disabled_graphical_set,
+}
 
 -- FLOW STYLES
 
@@ -198,13 +239,7 @@ styles.rb_inside_deep_frame_under_tabs = {
 }
 
 -- GrP fixme copied from 1.x factorio-data/core/prototypes.style.lua
-styles.rb_inside_deep_frame_for_tabs = {
-  type = "frame_style",
-  parent = "inside_deep_frame",
-  top_padding = 12,
-}
-
--- GrP fixme copied from 1.x factorio-data/core/prototypes.style.lua
+-- GrP fixme adopt 2.0 tab and tabbed-pane
 styles.rb_filter_group_table = {
   type = "table_style",
   horizontal_spacing = 0,
@@ -363,9 +398,28 @@ styles.rb_filter_scroll_pane = {
 
 -- TABLE STYLES
 
+-- GrP fixme copied from 1.x factorio-data/core/prototypes.style.lua
+-- parent of rb_info_table style used for "General" secion
+styles.rb_mods_table =
+{
+  type = "table_style",
+  horizontal_spacing = 0,
+  left_cell_padding = 8,
+  top_cell_padding = 2,
+  right_cell_padding = 8,
+  bottom_cell_padding = 2,
+  apply_row_graphical_set_per_column = true,
+  default_row_graphical_set = {position = {208, 17},  corner_size = 8},
+  hovered_graphical_set = {position = {34, 17}, corner_size = 8},
+  clicked_graphical_set = {position = {51, 17}, corner_size = 8},
+  selected_graphical_set = {position = {51, 17}, corner_size = 8},
+  selected_hovered_graphical_set = {position = {369, 17}, corner_size = 8},
+  selected_clicked_graphical_set = {position = {352, 17}, corner_size = 8},
+}
+
 styles.rb_info_table = {
   type = "table_style",
---  parent = "mods_table",
+  parent = "rb_mods_table",
   top_margin = -6, -- To hide the strange first row styling
   bottom_margin = 1,
   top_cell_padding = 1,

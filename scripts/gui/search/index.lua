@@ -112,7 +112,7 @@ function Gui:update_visual_contents()
           button = {
             type = "sprite-button",
             name = group.name,
-            -- style = "rb_filter_group_button_tab",
+            style = "rb_filter_group_button_tab",
             sprite = "item-group/" .. group.name,
             tooltip = { "item-group-name." .. group.name },
             actions = {
@@ -326,7 +326,7 @@ function index.build(player, player_table)
         },
         {
           type = "frame",
-          style = "rb_inside_deep_frame_for_tabs",
+          style = "inside_deep_frame",
           direction = "vertical",
           ref = { "tab_frame" },
           {
