@@ -38,7 +38,7 @@ function gui_util.navigate_to(e)
           local cursor_stack = player.cursor_stack
           player.clear_cursor()
           if cursor_stack and cursor_stack.valid then
-            local collision_box = game.entity_prototypes[blueprint_result.name].collision_box
+            local collision_box = prototypes.entity[blueprint_result.name].collision_box
             local height = bounding_box.height(collision_box)
             local width = bounding_box.width(collision_box)
             cursor_stack.set_stack({ name = "blueprint", count = 1 })

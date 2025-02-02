@@ -127,7 +127,7 @@ commands.add_command("rb-print-object", nil, function(e)
     __DebugAdapter.print(obj)
     player.print("Object data has been printed to the debug console.")
   else
-    log(game.table_to_json(obj))
+    log(helpers.table_to_json(obj))
     player.print("Object data has been printed to the log file.")
   end
 end)
@@ -531,13 +531,13 @@ script.on_event(defines.events.on_tick, function(e)
       if msg.gui then
         handle_gui_action(msg, { player_index = msg.player_index })
       elseif msg.action == "dump_database" then
-        -- game.table_to_json() does not like functions
+        -- helpers.table_to_json() does not like functions
         local output = {}
         for key, value in pairs(storage.database) do
           output[key] = value
         end
-        local func = msg.raw and serpent.dump or game.table_to_json
-        game.write_file("rb-dump", func(output), false, msg.player_index)
+        local func = msg.raw and serpent.dump or helpers.table_to_json
+        helpers.write_file("rb-dump", func(output), false, msg.player_index)
         game.print("[color=green]Dumped database to script-output/rb-dump[/color]")
       elseif msg.action == "refresh_all" then
         dictionary.on_init()
