@@ -96,19 +96,20 @@ end
 function database:update_launch_products(launch_products, force_index, to_value)
   for _, launch_product in pairs(launch_products) do
     local product_data = self.item[launch_product.name]
-    if product_data.researched_forces then
-      product_data.researched_forces[force_index] = to_value
-    end
+    product_data.researched_forces = product_data.researched_forces or {}
+    product_data.researched_forces[force_index] = to_value
     self:update_launch_products(product_data.rocket_launch_products, force_index, to_value)
   end
 end
 
 function database:update_research_ingredients_missing(obj_ident, obj_data, force_index)
   obj_data.research_ingredients_missing = obj_data.research_ingredients_missing or {}
+  obj_data.researched_forces = obj_data.researched_forces or {}
 
-  if obj_data.enabled_at_start or (obj_data.researched_forces and obj_data.researched_forces[force_index]) then
+  if obj_data.enabled_at_start or obj_data.researched_forces[force_index] then
     -- no research required, or research completed
-    obj_data.research_ingredients_missing[force_index] = -1
+    obj_data.researched_forces[force_index] = true
+    obj_data.research_ingredients_missing[force_index] = 0
     return
   end
 
@@ -166,16 +167,14 @@ function database:handle_research_updated(technology, to_value, skip_research_in
       local obj_data = self[class][obj_ident.name]
 
       -- Unlock this object
-      if obj_data.researched_forces then
-        obj_data.researched_forces[force_index] = to_value
-      end
+      obj_data.researched_forces = obj_data.researched_forces or {}
+      obj_data.researched_forces[force_index] = to_value
 
       if class == "fluid" and obj_data.temperature_ident then
         -- Unlock base fluid
         local base_fluid_data = self.fluid[obj_data.prototype_name]
-        if base_fluid_data.researched_forces then
-          base_fluid_data.researched_forces[force_index] = to_value
-        end
+        base_fluid_data.researched_forces = base_fluid_data.researched_forces or {}
+        base_fluid_data.researched_forces[force_index] = to_value
       elseif class == "item" then
         -- Unlock rocket launch products
         self:update_launch_products(obj_data.rocket_launch_products, force_index, to_value)
@@ -184,13 +183,14 @@ function database:handle_research_updated(technology, to_value, skip_research_in
         -- GrP fixme probably broken in 2.0, see offshore-pump.lua
         -- local fluid = obj_data.fluid
         -- local fluid_data = self.fluid[fluid.name]
-        -- if fluid_data.researched_forces then
-        --   fluid_data.researched_forces[force_index] = to_value
-        -- end
+        -- fluid_data.researched_forces = fluid_data.researched_forces or {}
+        -- fluid_data.researched_forces[force_index] = to_value
       end
     end
   end
 
+  -- skip_research_ingredients_missing==true is used by check_force() to update tech en masse.
+  -- Single research-complete events do use this path.
   if not skip_research_ingredients_missing then
     -- If this tech contributes research ingredients to any other techs,
     -- update research_ingredients_missing for those other techs and their unlocks.
@@ -210,16 +210,40 @@ function database:handle_research_updated(technology, to_value, skip_research_in
         end
       end
     end
+
+    self:sort_ingredients_and_products(force_index)
   end
 end
 
-function science_comparator(db, force, lhs_ident, rhs_ident)
+-- index_path(table, k1, k2, k3)
+-- attempts to return table[k1][k2][k3]
+-- but returns nil if any index does not exist
+function index_path(table, ...)
+  for i = 1, select("#", ...) do
+    if table == nil then
+      return nil
+    end
+    table = table[select(i, ...)]
+  end
+  return table
+end
+
+function science_comparator(db, force_index, lhs_ident, rhs_ident)
   local lhs_data = db[lhs_ident.class][lhs_ident.name]
   local rhs_data = db[rhs_ident.class][rhs_ident.name]
 
-  -- sort by researchedness and missing researches (-1 means already researched)
-  local lhs_miss = lhs_data.research_ingredients_missing[force.index]
-  local rhs_miss = rhs_data.research_ingredients_missing[force.index]
+  -- sort by researchedness
+  local lhs_res = (lhs_data.enabled_at_start or
+                   index_path(lhs_data, "researched_forces", force_index))
+  local rhs_res = (rhs_data.enabled_at_start or
+                   index_path(rhs_data, "researched_forces", force_index))
+  if lhs_res ~= rhs_res then
+    return lhs_res
+  end
+
+  -- sort by missing researches
+  local lhs_miss = lhs_data.research_ingredients_missing[force_index]
+  local rhs_miss = rhs_data.research_ingredients_missing[force_index]
   if lhs_miss ~= rhs_miss then
     return lhs_miss < rhs_miss
   end
@@ -227,6 +251,21 @@ function science_comparator(db, force, lhs_ident, rhs_ident)
   -- sort by name
   -- GrP fixme capture and use "order" field instead
   return lhs_ident.name < rhs_ident.name
+end
+
+-- Sort ingredient_in and product_of lists, simpler tech first.
+function database:sort_ingredients_and_products(force_index)
+  local db = self
+  for name, obj_data in pairs(self.item) do
+    for _, field in ipairs({ "ingredient_in", "product_of" }) do
+      if obj_data[field] then
+        table.sort(obj_data[field],
+          function (lhs, rhs)
+            return science_comparator(db, force_index, lhs, rhs)
+          end)
+      end
+    end
+  end
 end
 
 function database:check_force(force)
@@ -245,19 +284,8 @@ function database:check_force(force)
     end
   end
 
-  -- Sort ingredient_in and product_of lists
-  -- Simpler tech comes first.
-  -- GrP 1.x allowed fluid research ingredients; 2.x does not?
-  local db = self
---for _, class in ipairs({ "item", "fluid" }) do
-    for name, obj_data in pairs(self.item) do
-      for _, field in ipairs({ "ingredient_in", "product_of" }) do
-        if obj_data[field] then
-          table.sort(obj_data[field], function (lhs, rhs) return science_comparator(db, force, lhs, rhs) end)
-        end
-      end
-    end
---end
+  -- Re-sort lists to account for newly-unlocked tech.
+  self:sort_ingredients_and_products(force.index)
 end
 
 return database
