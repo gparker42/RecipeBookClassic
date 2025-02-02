@@ -254,6 +254,7 @@ function science_comparator(db, force_index, lhs_ident, rhs_ident)
 end
 
 -- Sort ingredient_in and product_of lists, simpler tech first.
+-- GrP sort these lists lazily when they are first used
 function database:sort_ingredients_and_products(force_index)
   local db = self
   for name, obj_data in pairs(self.item) do

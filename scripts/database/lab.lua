@@ -26,7 +26,6 @@ function lab_proc.build(database)
       prototype_name = name,
       -- GrP fixme quality
       researching_speed = prototype.get_researching_speed(),
-      science_packs = {},
       size = util.get_size(prototype),
       unlocked_by = {},
     }

@@ -28,7 +28,6 @@ function mining_drill_proc.build(database)
       prototype_name = name,
       resource_categories_lookup = prototype.resource_categories,
       resource_categories = util.convert_categories(prototype.resource_categories, "resource_category"),
-      science_packs = {},
       size = util.get_size(prototype),
       supports_fluid = #prototype.fluidbox_prototypes > 0,
       unlocked_by = {},

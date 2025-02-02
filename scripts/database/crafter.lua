@@ -24,7 +24,6 @@ return function(database, metadata)
       prototype_name = name,
       recipe_categories_lookup = prototype.crafting_categories or {},
       recipe_categories = util.convert_categories(prototype.crafting_categories or {}, "recipe_category"),
-      science_packs = {},
       unlocked_by = {},
     }
     util.add_to_dictionary("entity", name, prototype.localised_name)
@@ -98,7 +97,6 @@ return function(database, metadata)
       recipe_categories_lookup = prototype.crafting_categories or {},
       recipe_categories = util.convert_categories(prototype.crafting_categories or {}, "recipe_category"),
       rocket_parts_required = prototype.rocket_parts_required,
-      science_packs = {},
       size = util.get_size(prototype),
       unlocked_by = {},
     }

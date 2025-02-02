@@ -30,7 +30,6 @@ return function(database)
       minimum_temperature = fluid_box.minimum_temperature,
       placed_by = util.process_placed_by(prototype),
       prototype_name = name,
-      science_packs = {},
       unlocked_by = {},
     }
 

@@ -5,32 +5,6 @@ local constants = require("constants")
 
 local util = require("scripts.util")
 
-local function insert_science_packs(database, obj_data, science_packs)
-  if #science_packs == 0 then
-    return
-  end
-
-  local existing = obj_data.science_packs
-  local existing_len = #existing
-
-  -- If there are no existing science packs
-  if #obj_data.science_packs == 0 then
-    obj_data.science_packs = science_packs
-    return
-  end
-
-  local existing_highest_ident = existing[existing_len]
-  local existing_highest_data = database.science_pack[existing_highest_ident.name]
-
-  local new_highest_ident = science_packs[#science_packs]
-  local new_highest_data = database.science_pack[new_highest_ident.name]
-
-  -- The object should show when the fewest possible science packs are enabled
-  if existing_highest_data.order > new_highest_data.order then
-    obj_data.science_packs = science_packs
-  end
-end
-
 return function(database, metadata)
   for name, prototype in pairs(storage.prototypes.technology) do
     local unlocks_equipment = util.unique_obj_array()
@@ -43,7 +17,7 @@ return function(database, metadata)
     -- Research units and ingredients per unit
     for _, ingredient in ipairs(prototype.research_unit_ingredients) do
       research_ingredients_per_unit[#research_ingredients_per_unit + 1] = {
-        class = "item",  -- GrP 1.x allowed fluids, 2.x no longer does?
+        class = "item",  -- GrP fixme 2.x doesn't have item/fluid in the prototype?
         name = ingredient.name,
         amount_ident = util.build_amount_ident({ amount = ingredient.amount }),
       }
@@ -60,23 +34,34 @@ return function(database, metadata)
       return { class = "science_pack", name = pack.name }
     end)
 
-    -- Collect the list of science packs required by this technology
-    -- and its prerequisite technologies.
-    -- We use whatever precursor tech
-
+    -- Collect the list of non-science-pack triggers required by this research.
+    -- These objects might need to be crafted, mined, built, launched.
+    -- GrP fixme quality, some of these have quality requirements
+    local trigger_objects = table.map({ prototype.research_trigger }, function (trigger)
+      local object
+      if trigger.type == "craft-item"             then object = { class = "item",        name = trigger.item.name }
+      elseif trigger.type == "mine-entity"        then object = { class = "entity_type", name = trigger.entity }
+      elseif trigger.type == "craft-fluid"        then object = { class = "fluid",       name = trigger.fluid }
+      elseif trigger.type == "build-entity"       then object = { class = "entity_type", name = trigger.entity.name }
+      elseif trigger.type == "capture-spawner"    then object = { class = "entity_type", name = trigger.entity and trigger.entity.name or "unit-spawner" }
+      elseif trigger.type == "send-item-to-orbit" then object = { class = "item",        name = trigger.item.name }
+      -- GrP fixme create-space-platform
+      end
+      return object
+    end)
 
     -- This technology unlocks recipes, materials, entities.
     -- Set their respective science pack requirements.
-    --
+
     -- GrP fixme need to include prerequisite technology costs to solve
-    --   ## the "uranium problem" ##
-    --   Vanilla U-235 is unlocked by Uranium Processing. Uranium Processing
-    --   unlocks after mining some ore, which counts as 1 research ingredient.
-    --   Thus it appears to be available soon based on a simple count of
-    --   unresearched research ingredients. In reality Uranium Processing also
-    --   requires Uranium Mining, and that requires three more science packs.
-    --   Including prerequisite costs means that U-235 does not appear
-    --   to be available soon at the start of the game.
+    -- ## the "uranium problem" ##
+    -- Unmodded uranium 235 is unlocked by Uranium Processing. Uranium Processing
+    -- unlocks after mining some ore, which counts as 1 research ingredient.
+    -- Thus it appears to be available soon based on a simple count of
+    -- unresearched research ingredients. In reality Uranium Processing also
+    -- requires Uranium Mining, and that requires three more science packs.
+    -- Including prerequisite costs means that U-235 does not appear
+    -- to be available soon at the start of the game.
     for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
         local recipe_data = database.recipe[modifier.recipe]
@@ -85,9 +70,8 @@ return function(database, metadata)
         local disabled = constants.disabled_categories.recipe_category[recipe_data.recipe_category.name]
         if not disabled or disabled ~= 0 then
           -- Recipe
-          insert_science_packs(database, recipe_data, science_packs)
+          recipe_data.researched_forces = recipe_data.researched_forces or {}
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = { class = "technology", name = name }
-          recipe_data.researched_forces = {}
           unlocks_recipes[#unlocks_recipes + 1] = { class = "recipe", name = modifier.recipe }
           for _, product in pairs(recipe_data.products) do
             local product_name = product.name
@@ -99,8 +83,7 @@ return function(database, metadata)
             -- GrP fixme does this also include other barrel-like items like canisters?
             local is_empty_barrel_recipe = string.find(modifier.recipe, "^empty%-.+%-barrel$")
             if product_data.class ~= "fluid" or not is_empty_barrel_recipe then
-              product_data.researched_forces = {}
-              insert_science_packs(database, product_data, science_packs)
+              product_data.researched_forces = product_data.researched_forces or {}
               product_data.unlocked_by[#product_data.unlocked_by + 1] = { class = "technology", name = name }
             end
 
@@ -116,8 +99,7 @@ return function(database, metadata)
             if place_result then
               local entity_data = database.entity[place_result.name]
               if entity_data then
-                entity_data.researched_forces = {}
-                insert_science_packs(database, entity_data, science_packs)
+                entity_data.researched_forces = entity_data.researched_forces or {}
                 entity_data.unlocked_by[#entity_data.unlocked_by + 1] = { class = "technology", name = name }
                 unlocks_entities[#unlocks_entities + 1] = place_result
               end
@@ -128,8 +110,7 @@ return function(database, metadata)
             if place_as_equipment_result then
               local equipment_data = database.equipment[place_as_equipment_result.name]
               if equipment_data then
-                equipment_data.researched_forces = {}
-                insert_science_packs(database, equipment_data, science_packs)
+                equipment_data.researched_forces = equipment_data.researched_forces or {}
                 equipment_data.unlocked_by[#equipment_data.unlocked_by + 1] = { class = "technology", name = name }
                 unlocks_equipment[#unlocks_equipment + 1] = place_as_equipment_result
               end
@@ -156,7 +137,6 @@ return function(database, metadata)
       research_unit_count_formula = formula,
       research_unit_count = research_unit_count,
       research_unit_energy = prototype.research_unit_energy / 60,
-      science_packs = science_packs,
       unlocks_entities = unlocks_entities,
       unlocks_equipment = unlocks_equipment,
       unlocks_fluids = unlocks_fluids,

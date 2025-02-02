@@ -32,7 +32,6 @@ return function(database, metadata)
       pollution_multiplier = prototype.emissions_multiplier ~= 1 and prototype.emissions_multiplier or nil,
       prototype_name = name,
       recipe_category = { class = "recipe_category", name = category },
-      science_packs = {},
       subgroup = { class = "group", name = prototype.subgroup.name },
       unlocked_by = {},
       used_as_fixed_recipe = metadata.fixed_recipes[name],
