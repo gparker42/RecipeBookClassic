@@ -55,11 +55,28 @@ return function(database, metadata)
       research_unit_count = prototype.research_unit_count
     end
 
+    -- Collect the list of science packs required by this technology's research.
     local science_packs = table.map(prototype.research_unit_ingredients, function(pack)
       return { class = "science_pack", name = pack.name }
     end)
 
-    -- Unlocks recipes, materials, entities
+    -- Collect the list of science packs required by this technology
+    -- and its prerequisite technologies.
+    -- We use whatever precursor tech
+
+
+    -- This technology unlocks recipes, materials, entities.
+    -- Set their respective science pack requirements.
+    --
+    -- GrP fixme need to include prerequisite technology costs to solve
+    --   ## the "uranium problem" ##
+    --   Vanilla U-235 is unlocked by Uranium Processing. Uranium Processing
+    --   unlocks after mining some ore, which counts as 1 research ingredient.
+    --   Thus it appears to be available soon based on a simple count of
+    --   unresearched research ingredients. In reality Uranium Processing also
+    --   requires Uranium Mining, and that requires three more science packs.
+    --   Including prerequisite costs means that U-235 does not appear
+    --   to be available soon at the start of the game.
     for _, modifier in ipairs(prototype.effects) do
       if modifier.type == "unlock-recipe" then
         local recipe_data = database.recipe[modifier.recipe]
@@ -67,6 +84,7 @@ return function(database, metadata)
         -- Check if the category should be ignored for recipe availability
         local disabled = constants.disabled_categories.recipe_category[recipe_data.recipe_category.name]
         if not disabled or disabled ~= 0 then
+          -- Recipe
           insert_science_packs(database, recipe_data, science_packs)
           recipe_data.unlocked_by[#recipe_data.unlocked_by + 1] = { class = "technology", name = name }
           recipe_data.researched_forces = {}
@@ -76,24 +94,24 @@ return function(database, metadata)
             local product_data = database[product.class][product_name]
             local product_ident = { class = product_data.class, name = product_data.prototype_name }
 
-            -- For "empty X barrel" recipes, do not unlock the fluid with the recipe
+            -- For "empty X barrel" recipes, do not unlock the fluid with the barreling recipe
             -- This is to avoid fluids getting "unlocked" when they are in reality still 100 hours away
+            -- GrP fixme does this also include other barrel-like items like canisters?
             local is_empty_barrel_recipe = string.find(modifier.recipe, "^empty%-.+%-barrel$")
-
             if product_data.class ~= "fluid" or not is_empty_barrel_recipe then
               product_data.researched_forces = {}
               insert_science_packs(database, product_data, science_packs)
               product_data.unlocked_by[#product_data.unlocked_by + 1] = { class = "technology", name = name }
             end
 
-            -- Materials
+            -- Materials (products of the unlocked recipe)
             if product_data.class == "item" then
               unlocks_items[#unlocks_items + 1] = product_ident
             elseif product_data.class == "fluid" and not is_empty_barrel_recipe then
               unlocks_fluids[#unlocks_fluids + 1] = product_ident
             end
 
-            -- Entities
+            -- Entities (products of the unlocked recipe that can be placed)
             local place_result = metadata.place_results[product_name]
             if place_result then
               local entity_data = database.entity[place_result.name]
@@ -105,7 +123,7 @@ return function(database, metadata)
               end
             end
 
-            -- Equipment
+            -- Equipment (products of the unlocked recipe that can be equipped)
             local place_as_equipment_result = metadata.place_as_equipment_results[product_name]
             if place_as_equipment_result then
               local equipment_data = database.equipment[place_as_equipment_result.name]
