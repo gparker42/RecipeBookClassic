@@ -280,4 +280,51 @@ function util.add_to_dictionary(dict, key, localised)
   end
 end
 
+function util.stable_sort(table, inorder)
+  local last = #table
+  for i = 1, last - 1 do
+    for j = i + 1, last do
+      if not inorder(table[i], table[j]) then
+        local temp = table[i]
+        table[i] = table[j]
+        table[j] = temp
+      end
+    end
+  end
+end
+
+-- Compare two object ident by researchedness.
+-- Researched is before unresearched.
+-- Slightly unresearched is before distantly unresearched.
+function util.researchedness_comparator(database, player_data, lhs_ident, rhs_ident)
+  local force_index = player_data.force.index
+  local colorize_unresearched = player_data.settings.general.content.colorize_unresearched
+  local lhs_data = database[lhs_ident.class][lhs_ident.name]
+  local rhs_data = database[rhs_ident.class][rhs_ident.name]
+
+  -- sort by researchedness
+  -- `not not` fixes `false ~= nil` problems
+  local lhs_res = not not (lhs_data.enabled_at_start or
+                           (lhs_data.researched_forces and
+                            lhs_data.researched_forces[force_index]))
+  local rhs_res = not not (rhs_data.enabled_at_start or
+                           (rhs_data.researched_forces and
+                            rhs_data.researched_forces[force_index]))
+  if lhs_res ~= rhs_res then
+    return lhs_res
+  end
+
+  -- sort by missing researches
+  if colorize_unresearched then
+    local lhs_miss = lhs_data.research_ingredients_missing[force_index]
+    local rhs_miss = rhs_data.research_ingredients_missing[force_index]
+    if lhs_miss ~= rhs_miss then
+      return lhs_miss < rhs_miss
+    end
+  end
+
+  -- same researchedness, lhs and rhs are in order
+  return true
+end
+
 return util

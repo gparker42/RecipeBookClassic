@@ -223,7 +223,7 @@ function actions.update_search_results(Gui, _, _)
                 local info = formatter(obj_data, player_data, { blueprint_result = blueprint_result })
                 if info then
                   i = i + 1
-                  local style = "rb_list_box_item" .. formatter.research_color_suffix(info)
+                  local style = "rb_list_box_item" .. formatter.research_color_suffix(info, player_data)
                   local item = children[i]
                   if item then
                     item.style = style

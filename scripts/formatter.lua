@@ -46,20 +46,21 @@ local function expand_string(source, ...)
   return source
 end
 
-local function research_color_name(info)
+local function research_color_name(info, player_data)
+  local colorize = player_data.settings.general.content.colorize_unresearched
   if info.researched then
     return ""
-  elseif info.research_ingredients_missing == 0 then
+  elseif info.research_ingredients_missing == 0 and colorize then
     return "missing_0_research_ingredients"
-  elseif info.research_ingredients_missing == 1 then
+  elseif info.research_ingredients_missing == 1 and colorize then
     return "missing_1_research_ingredients"
   else
     return "unresearched"
   end
 end
 
-local function research_color_suffix(info)
-  local color_name = research_color_name(info)
+local function research_color_suffix(info, player_data)
+  local color_name = research_color_name(info, player_data)
   if color_name ~= "" then
     color_name = "_" .. color_name
   end
@@ -323,7 +324,7 @@ local function get_base_tooltip(obj_data, obj_properties, player_data, options)
   after = after .. rich_text("color", "info", gui_translations[class])
 
   if not obj_properties.researched then
-    after = after .. "  |  " .. rich_text("color", research_color_name(obj_properties), gui_translations.unresearched)
+    after = after .. "  |  " .. rich_text("color", research_color_name(obj_properties, player_data), gui_translations.unresearched)
   end
 
   if not obj_properties.enabled then

@@ -122,7 +122,7 @@ function Gui:update_contents(options)
     local info = formatter(obj_data, player_data, { always_show = true, label_only = true })
     local caption = info.caption
     if not info.researched then
-      caption = formatter.rich_text("color", formatter.research_color_name(info), caption)
+      caption = formatter.rich_text("color", formatter.research_color_name(info, player_data), caption)
     end
     entries[history_len - (i - 1)] = formatter.rich_text(
       "font",
@@ -244,7 +244,7 @@ function Gui:update_contents(options)
   local label = refs.header.label
   label.caption = title_info.caption
   label.tooltip = title_info.tooltip
-  label.style = "rb_toolbar_label" .. formatter.research_color_suffix(title_info)
+  label.style = "rb_toolbar_label" .. formatter.research_color_suffix(title_info, player_data)
 
   -- Buttons
   if context.class == "technology" then

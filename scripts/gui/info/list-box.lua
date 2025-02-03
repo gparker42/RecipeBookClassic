@@ -1,7 +1,9 @@
+local table = require("__flib__.table")
 local gui = require("old-flib-gui")
 
 local constants = require("constants")
 local formatter = require("scripts.formatter")
+local util = require("scripts.util")
 
 local list_box = {}
 
@@ -66,11 +68,20 @@ function list_box.update(component, refs, context_data, player_data, settings, v
   local query = variables.search_query
 
   local search_type = player_data.settings.general.search.search_type
+  local sort_unresearched = player_data.settings.general.content.sort_unresearched
 
-  -- Add items
+  -- Sort objects if necessary.
+  local objects = settings.default_state ~= "hidden" and context_data[component.source] or {}
+  if (component.source == "ingredient_in" or component.source == "product_of") and sort_unresearched then
+    objects = table.shallow_copy(objects)
+    util.stable_sort(objects, function (lhs, rhs)
+      return util.researchedness_comparator(storage.database, player_data, lhs, rhs)
+    end)
+  end
+
+  -- Add objects
   local i = 0 -- The "added" index
   local iterator = component.use_pairs and pairs or ipairs
-  local objects = settings.default_state ~= "hidden" and context_data[component.source] or {}
   for _, obj in iterator(objects) do
     local translation = player_data.translations[obj.class][obj.name]
     -- Match against search string
@@ -109,7 +120,7 @@ function list_box.update(component, refs, context_data, player_data, settings, v
 
       if info then
         i = i + 1
-        local style = "rb_list_box_item" .. formatter.research_color_suffix(info)
+        local style = "rb_list_box_item" .. formatter.research_color_suffix(info, player_data)
         local item = children[i]
         if item then
           item.style = style

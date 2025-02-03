@@ -210,62 +210,6 @@ function database:handle_research_updated(technology, to_value, skip_research_in
         end
       end
     end
-
-    self:sort_ingredients_and_products(force_index)
-  end
-end
-
--- index_path(table, k1, k2, k3)
--- attempts to return table[k1][k2][k3]
--- but returns nil if any index does not exist
-function index_path(table, ...)
-  for i = 1, select("#", ...) do
-    if table == nil then
-      return nil
-    end
-    table = table[select(i, ...)]
-  end
-  return table
-end
-
-function science_comparator(db, force_index, lhs_ident, rhs_ident)
-  local lhs_data = db[lhs_ident.class][lhs_ident.name]
-  local rhs_data = db[rhs_ident.class][rhs_ident.name]
-
-  -- sort by researchedness
-  local lhs_res = (lhs_data.enabled_at_start or
-                   index_path(lhs_data, "researched_forces", force_index))
-  local rhs_res = (rhs_data.enabled_at_start or
-                   index_path(rhs_data, "researched_forces", force_index))
-  if lhs_res ~= rhs_res then
-    return lhs_res
-  end
-
-  -- sort by missing researches
-  local lhs_miss = lhs_data.research_ingredients_missing[force_index]
-  local rhs_miss = rhs_data.research_ingredients_missing[force_index]
-  if lhs_miss ~= rhs_miss then
-    return lhs_miss < rhs_miss
-  end
-
-  -- sort by name
-  -- GrP fixme capture and use "order" field instead
-  return lhs_ident.name < rhs_ident.name
-end
-
--- Sort ingredient_in and product_of lists, simpler tech first.
--- GrP sort these lists lazily when they are first used
-function database:sort_ingredients_and_products(force_index)
-  local db = self
-  for name, obj_data in pairs(self.item) do
-    for _, field in ipairs({ "ingredient_in", "product_of" }) do
-      if obj_data[field] then
-        table.sort(obj_data[field],
-          function (lhs, rhs)
-            return science_comparator(db, force_index, lhs, rhs)
-          end)
-      end
-    end
   end
 end
 
@@ -284,9 +228,6 @@ function database:check_force(force)
       self:update_research_ingredients_missing({ class = class, name = name }, obj_data, force.index)
     end
   end
-
-  -- Re-sort lists to account for newly-unlocked tech.
-  self:sort_ingredients_and_products(force.index)
 end
 
 return database

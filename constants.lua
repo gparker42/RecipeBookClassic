@@ -226,6 +226,16 @@ constants.general_settings = {
       has_tooltip = false,
       default_value = true,
     },
+    sort_unresearched = {
+      type = "bool",
+      has_tooltip = false,
+      default_value = true,
+    },
+    colorize_unresearched = {
+      type = "bool",
+      has_tooltip = true,
+      default_value = true,
+    },
     show_made_in_in_quick_ref = {
       type = "bool",
       has_tooltip = false,
@@ -359,6 +369,7 @@ constants.gui_strings = {
   click = { "gui.rb-click" },
   close_search_gui_after_selection = { "gui.rb-close-search-gui-after-selection" },
   close_search_when_moving_info_pages = { "gui.rb-close-search-when-moving-info-pages" },
+  colorize_unresearched = { "gui.rb-colorize-unresearched" },
   construction_radius = { "gui.rb-construction-radius" },
   consumption_bonus = { "description.consumption-bonus" },
   content = { "gui.rb-content" },
@@ -497,6 +508,7 @@ constants.gui_strings = {
   si_joule = { "si-unit-symbol-joule" },
   si_watt = { "si-unit-symbol-watt" },
   size = { "gui.rb-size" },
+  sort_unresearched = { "gui.rb-sort-unresearched" },
   speed_bonus = { "description.speed-bonus" },
   stack_size = { "gui.rb-stack-size" },
   take_result = { "gui.rb-take-result" },

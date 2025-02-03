@@ -118,7 +118,7 @@ function gui_util.update_list_box(pane, source_tbl, player_data, iterator, optio
     if info then
       i = i + 1
       local blueprint_result = obj_data.blueprint_result
-      local style = "rb_list_box_item" .. formatter.research_color_suffix(info)
+      local style = "rb_list_box_item" .. formatter.research_color_suffix(info, player_data)
       local item = children[i]
       if item then
         item.style = style
