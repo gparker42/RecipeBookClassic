@@ -46,6 +46,7 @@ function gui_util.perform_pipette(player, tags)
       })
       player.add_to_clipboard(cursor_stack)
       player.activate_paste()
+      player.play_sound({ path = "utility/smart_pipette" })
     elseif prototypes.entity[blueprint_result.name] then
       -- Result is an entity with no recipe. Use the pipette_entity() function.
       local ok = player.pipette_entity(blueprint_result.name, true)
