@@ -48,10 +48,16 @@ function util.build_temperature_ident(fluid)
     temperature_min = temperature
     temperature_max = temperature
   elseif temperature_min and temperature_max then
-    if temperature_min == math.min_double then
+    -- factorio 1.x uses C's +/- DBL_MAX
+    -- factorio 2.0 uses C's +/- FLT_MAX
+    -- Here for robustness we clamp everything to the float range
+    -- assuming that anything beyond float range is not a real temperature.
+    local max_temp =  0X1.FFFFFEP+127  -- (FLT_MAX)
+    local min_temp = -0X1.FFFFFEP+127  -- (-FLT_MAX)
+    if temperature_min <= min_temp then
       temperature_string = "≤" .. format_number(temperature_max)
       short_temperature_string = "≤" .. core_util.format_number(temperature_max, true)
-    elseif temperature_max == math.max_double then
+    elseif temperature_max >= max_temp then
       temperature_string = "≥" .. format_number(temperature_min)
       short_temperature_string = "≥" .. core_util.format_number(temperature_min, true)
     else
@@ -75,9 +81,12 @@ end
 --- Get the "sorting number" of a temperature. Will sort in ascending order, with absolute, then min range, then max range.
 --- @param temperature_ident TemperatureIdent
 function util.get_sorting_number(temperature_ident)
-  if temperature_ident.min == math.min_double then
+  -- see build_temperature_ident() for a description of these values
+  local max_temp =  0X1.FFFFFEP+127  -- (FLT_MAX)
+  local min_temp = -0X1.FFFFFEP+127  -- (-FLT_MAX)
+  if temperature_ident.min <= min_temp then
     return temperature_ident.max + 0.001
-  elseif temperature_ident.max == math.max_double then
+  elseif temperature_ident.max >= max_temp then
     return temperature_ident.min + 0.003
   elseif temperature_ident.min ~= temperature_ident.max then
     return temperature_ident.min + 0.002
