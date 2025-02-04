@@ -122,7 +122,7 @@ function fluid_proc.process_temperatures(database, metadata)
           "",
           localised.name,
           " (",
-          { "format-degrees-c-compact", temperature_data.temperature_ident.string },
+          { "", temperature_data.temperature_ident.string, " ", {"si-unit-degree-celsius"} },
           ")",
         })
       end
