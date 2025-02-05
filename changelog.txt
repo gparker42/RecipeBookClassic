@@ -8,6 +8,8 @@ Date: ???
     - Updated for Factorio 2.0.
     - Enabled pipette tool in many places.
     - New info "Spoils into" and "Spoilage from" for items that spoil or decay.
+    - New setting "Sort unresearched objects last" setting to sort some lists.
+    - New setting "Set color of unresearched objects based on research distance" to distinguish things that can be researched soon from things that are more distant.
   Known bugs:
     - Fluid info for offshore pumps is missing.
     - Module info is missing.
