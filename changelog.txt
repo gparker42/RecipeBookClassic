@@ -6,6 +6,13 @@ Date: ???
   Changes:
     - Recipe Book (Classic Remaster) based on raiguard's Recipe Book version 3.
     - Updated for Factorio 2.0.
+    - Enabled pipette tool in many places.
+    - New info "Spoils into" and "Spoilage from" for items that spoil or decay.
+  Known bugs:
+    - Fluid info for offshore pumps is missing.
+    - Module info is missing.
+    - All info is shown for default quality only.
+    - Translations other than English are not available.
 ---------------------------------------------------------------------------------------------------
 Version: 3.5.10
 Date: 2024-07-28
