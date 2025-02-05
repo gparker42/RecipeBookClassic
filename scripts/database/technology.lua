@@ -94,6 +94,17 @@ return function(database, metadata)
               unlocks_fluids[#unlocks_fluids + 1] = product_ident
             end
 
+            -- Items (spoilage of the unlocked recipe's products)
+            local spoil_result = product_data.spoil_result
+            if spoil_result then
+              local item_data = database.item[spoil_result.name]
+              if item_data then
+                item_data.researched_forces = item_data.researched_forces or {}
+                item_data.unlocked_by[#item_data.unlocked_by + 1] = { class = "technology", name = name }
+                unlocks_items[#unlocks_items + 1] = spoil_result
+              end
+            end
+
             -- Entities (products of the unlocked recipe that can be placed)
             local place_result = metadata.place_results[product_name]
             if place_result then

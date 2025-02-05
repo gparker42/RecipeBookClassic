@@ -590,6 +590,7 @@ script.on_event(defines.events.on_tick, function(e)
         game.print("[color=green]Dumped database to script-output/rb-dump[/color]")
       elseif msg.action == "refresh_all" then
         dictionary.on_init()
+        global_data.build_prototypes()
         storage.database = database.new()
         for player_index, player in pairs(game.players) do
           local player_table = storage.players[player_index]
