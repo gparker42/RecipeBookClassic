@@ -24,6 +24,7 @@ local recipe = require("scripts.database.recipe")
 local resource_category = require("scripts.database.resource-category")
 local resource = require("scripts.database.resource")
 local science_pack = require("scripts.database.science-pack")
+local spoilage = require("scripts.database.spoilage")
 local technology = require("scripts.database.technology")
 
 local database = {}
@@ -82,6 +83,7 @@ function database.new()
   lab.process_researched_in(self)
 
   burning(self)
+  spoilage(self)
   entity_state(self)
 
   for _, force in pairs(game.forces) do

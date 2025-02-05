@@ -59,6 +59,19 @@ function item_proc.build(database, metadata)
       burnt_result = { class = "item", name = burnt_result.name }
     end
 
+    local spoil_result = prototype.spoil_result
+    if spoil_result then
+      -- GrP fixme quality
+      spoil_time = spoil_result.get_spoil_ticks()
+      spoil_result = { class = "item", name = spoil_result.name }
+    end
+
+    -- GrP fixme plant result (spaceage gleba?)
+    -- local plant_result = prototype.plant_result
+    -- if plant_result then
+    --   plant_result = { class = "item", name = plant_result.name }
+    -- end
+
     local equipment_categories = util.unique_obj_array()
     local equipment = util.unique_obj_array()
     local equipment_grid = prototype.equipment_grid
@@ -175,6 +188,9 @@ function item_proc.build(database, metadata)
       rocket_launch_product_of = {},
       rocket_launch_products = launch_products,
       science_packs = {},
+      spoil_result = spoil_result,
+      spoil_time = spoil_time,
+      spoil_result_of = {},
       stack_size = prototype.stack_size,
       subgroup = { class = "group", name = prototype.subgroup.name },
       unlocked_by = util.unique_obj_array(),
