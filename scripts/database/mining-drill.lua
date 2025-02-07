@@ -54,7 +54,7 @@ function mining_drill_proc.add_resources(database)
   end
 end
 
--- When calling the module directly, call fluid_proc.build
+-- When calling the module directly, call mining_drill_proc.build
 setmetatable(mining_drill_proc, {
   __call = function(_, ...)
     return mining_drill_proc.build(...)

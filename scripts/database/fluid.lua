@@ -180,26 +180,33 @@ function fluid_proc.process_temperatures(database, metadata)
             then
               -- Add to recipes table
               temperature_data[fluid_tbl_name][#temperature_data[fluid_tbl_name] + 1] = obj_ident
-              -- Recipe-specific logic
+
+              -- Recipe categories
               if obj_ident.class == "recipe" then
                 -- Add recipe category
                 local recipe_categories = temperature_data.recipe_categories
                 recipe_categories[#recipe_categories + 1] = table.shallow_copy(obj_data.recipe_category)
+              end
+
+              -- Recipe and boiler products are unlocked by tech.
+              -- If this is an "empty X barrel" recipe, ignore it;
+              -- this is to avoid variants being "unlocked" by a
+              -- barrel recipe you can't actually get them
+              if fluid_tbl_name == "product_of" and
+                 (obj_ident.class == "entity" or
+                  (obj_ident.class == "recipe" and
+                   not string.find(obj_ident.name, "^empty%-.+%-barrel$"))) then
                 -- If in product_of, append to unlocked_by
                 -- Also add this fluid to that tech's `unlocks fluids` table
-                -- This is to avoid variants being "unlocked" when you can't actually get them
-                -- If this is an "empty X barrel" recipe, ignore it
-                if fluid_tbl_name == "product_of" and not string.find(obj_ident.name, "^empty%-.+%-barrel$") then
-                  local temp_unlocked_by = temperature_data.unlocked_by
-                  for _, technology_ident in pairs(obj_data.unlocked_by) do
-                    temp_unlocked_by[#temp_unlocked_by + 1] = technology_ident
-                    local technology_data = database.technology[technology_ident.name]
-                    -- Don't use fluid_ident becuase it has an amount
-                    technology_data.unlocks_fluids[#technology_data.unlocks_fluids + 1] = {
-                      class = "fluid",
-                      name = temperature_data.name,
-                    }
-                  end
+                local temp_unlocked_by = temperature_data.unlocked_by
+                for _, technology_ident in pairs(obj_data.unlocked_by) do
+                  temp_unlocked_by[#temp_unlocked_by + 1] = technology_ident
+                  local technology_data = database.technology[technology_ident.name]
+                  -- Don't use fluid_ident becuase it has an amount
+                  technology_data.unlocks_fluids[#technology_data.unlocks_fluids + 1] = {
+                    class = "fluid",
+                    name = temperature_data.name,
+                  }
                 end
               end
             end
