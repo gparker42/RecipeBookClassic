@@ -6,7 +6,9 @@ local util = require("scripts.util")
 
 local fluid_proc = require("scripts.database.fluid")
 
-return function(database, metadata)
+local recipe = {}
+
+function recipe.build(database, metadata)
   for name, prototype in pairs(storage.prototypes.recipe) do
     local category = prototype.category
     local group = prototype.group
@@ -151,3 +153,12 @@ return function(database, metadata)
     util.add_to_dictionary("recipe_description", name, prototype.localised_description)
   end
 end
+
+-- When calling the module directly, call recipe.build
+setmetatable(recipe, {
+  __call = function(_, ...)
+    return recipe.build(...)
+  end,
+})
+
+return recipe

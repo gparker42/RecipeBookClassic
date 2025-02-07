@@ -62,10 +62,9 @@ function database.new()
   beacon(self, metadata)
   crafter(self, metadata)
   generator(self)
-  entity(self, metadata)
-  mining_drill(self)
-
   fluid(self, metadata)
+  entity(self, metadata)  -- requires fluids
+  mining_drill(self)
 
   lab(self)
   offshore_pump(self) -- requires fluids

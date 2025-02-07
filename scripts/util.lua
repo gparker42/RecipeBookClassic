@@ -36,9 +36,16 @@ end
 
 --- Builds a `TemperatureIdent` based on the fluid input/output parameters.
 function util.build_temperature_ident(fluid)
+  -- factorio 1.x uses C's +/- DBL_MAX
+  -- factorio 2.0 uses C's +/- FLT_MAX
+  -- Here for robustness we clamp everything to the float range
+  -- assuming that anything beyond float range is not a real temperature.
+  local max_temp =  0X1.FFFFFEP+127  -- (FLT_MAX)
+  local min_temp = -0X1.FFFFFEP+127  -- (-FLT_MAX)
+
   local temperature = fluid.temperature
-  local temperature_min = fluid.minimum_temperature
-  local temperature_max = fluid.maximum_temperature
+  local temperature_min = fluid.minimum_temperature or min_temp
+  local temperature_max = fluid.maximum_temperature or max_temp
   local temperature_string
   local short_temperature_string
   local short_top_string
@@ -47,13 +54,7 @@ function util.build_temperature_ident(fluid)
     short_temperature_string = core_util.format_number(temperature, true)
     temperature_min = temperature
     temperature_max = temperature
-  elseif temperature_min and temperature_max then
-    -- factorio 1.x uses C's +/- DBL_MAX
-    -- factorio 2.0 uses C's +/- FLT_MAX
-    -- Here for robustness we clamp everything to the float range
-    -- assuming that anything beyond float range is not a real temperature.
-    local max_temp =  0X1.FFFFFEP+127  -- (FLT_MAX)
-    local min_temp = -0X1.FFFFFEP+127  -- (-FLT_MAX)
+  elseif fluid.temperature_min or fluid.temperature_max then
     if temperature_min <= min_temp then
       temperature_string = "≤" .. format_number(temperature_max)
       short_temperature_string = "≤" .. core_util.format_number(temperature_max, true)

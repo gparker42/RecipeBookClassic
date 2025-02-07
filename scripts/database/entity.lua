@@ -2,6 +2,8 @@ local table = require("__flib__.table")
 
 local util = require("scripts.util")
 
+local fluid_proc = require("scripts.database.fluid")
+
 return function(database, metadata)
   metadata.gathered_from = {}
 
@@ -43,6 +45,82 @@ return function(database, metadata)
       end)
     end
 
+    -- Boilers don't have recipes.
+    -- Do recipe-like things with them here.
+    -- * boiler entity gets ingredients / products
+    -- * fluids get ingredient_in / product of
+    -- * fluid temperatures
+    -- * boiler entity gets input_fluid / output_fluid
+    local input_fluid, output_fluid
+    local ingredients, products
+    if prototype.type == "boiler" then
+      local input_fluidbox, output_fluidbox
+
+      -- input and output identity depends on boiler mode
+      for _, fluidbox in ipairs(prototype.fluidbox_prototypes) do
+        if fluidbox.production_type == "input-output" then
+          input_fluidbox = fluidbox
+          if prototype.boiler_mode == "heat-fluid-inside" then
+            output_fluidbox = fluidbox
+            break
+          end
+        elseif fluidbox.production_type == "input" then
+          input_fluidbox = fluidbox
+        elseif fluidbox.production_type == "output" then
+          if prototype.boiler_mode == "output-to-separate-pipe" then
+            output_fluidbox = fluidbox
+          end
+        end
+      end
+
+      if input_fluidbox and output_fluidbox then
+        -- add output fluid at boiler's target temperature
+        -- and input fluid at boiler's input temperature range
+
+        local input_temp_ident = util.build_temperature_ident({ minimum_temperature = input_fluidbox.minimum_temperature, maximum_temperature = input_fluidbox.maximum_temperature })
+        local output_temp_ident = util.build_temperature_ident({ temperature = prototype.target_temperature })
+
+        -- input fluid may or may not have temperature
+        local input_base_fluid_name = input_fluidbox.filter.name
+        local input_fluid_name = input_base_fluid_name
+        if input_fluid_ident then
+          fluid_proc.add_temperature(database.fluid[input_base_fluid_name], input_temp_ident)
+          input_fluid_name = input_base_fluid_name .. "." .. input_temp_ident.string
+        end
+
+        -- output fluid always has a temperature
+        local output_base_fluid_name = output_fluidbox.filter.name
+        local output_fluid_name = output_base_fluid_name .. "." .. output_temp_ident.string
+        fluid_proc.add_temperature(database.fluid[output_base_fluid_name], output_temp_ident)
+
+        input_fluid  = {
+          class = "fluid",
+          name = input_fluid_name,
+        }
+        output_fluid = {
+          class = "fluid",
+          name = output_fluid_name,
+        }
+        ingredients = {{
+          class = "fluid",
+          name = input_base_fluid_name,
+          temperature_ident = input_temp_ident,
+        }}
+        products = {{
+          class = "fluid",
+          name = output_base_fluid_name,
+          temperature_ident = output_temp_ident,
+        }}
+
+        -- input fluid is an ingredient_in boiler
+        -- output fluid is a product_of boiler
+        local ingredient_in = database.fluid[input_base_fluid_name].ingredient_in
+        ingredient_in[#ingredient_in + 1] = { class = "entity", name = name }
+        local product_of = database.fluid[output_base_fluid_name].product_of
+        product_of[#product_of + 1] = { class = "entity", name = name }
+      end
+    end
+
     database.entity[name] = {
       accepted_equipment = equipment,
       blueprint_result = util.build_blueprint_result(prototype),
@@ -54,6 +132,10 @@ return function(database, metadata)
       expected_resources = expected_resources,
       fuel_categories = fuel_categories,
       fuel_filter = fuel_filter,
+      input_fluid = input_fluid,
+      ingredients = ingredients,
+      output_fluid = output_fluid,
+      products = products,
       module_slots = prototype.module_inventory_size
           and prototype.module_inventory_size > 0
           and prototype.module_inventory_size
