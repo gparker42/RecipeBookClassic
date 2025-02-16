@@ -290,15 +290,88 @@ function util.add_to_dictionary(dict, key, localised)
   end
 end
 
-function util.stable_sort(table, inorder)
-  local last = #table
-  for i = 1, last - 1 do
-    for j = i + 1, last do
-      if not inorder(table[i], table[j]) then
-        local temp = table[i]
-        table[i] = table[j]
-        table[j] = temp
-      end
+-- src_array[left_start..left_end] is sorted
+-- src_array[left_start + 1, right_end] is sorted
+-- right side may be shorter than left side
+-- right side may be empty (left_end == right_end)
+-- merge left and right sides into dst_array[left_start..right_end]
+local function sorted_merge(dst_array, src_array,
+                            left_start, left_end, right_end, is_in_order)
+  local left = left_start
+  local right = left_end + 1
+
+  -- copy until one side runs out
+  local dst = left_start
+  while left <= left_end and right <= right_end do
+    if is_in_order(src_array[left], src_array[right]) then
+      dst_array[dst] = src_array[left]
+      left = left + 1
+    else
+      dst_array[dst] = src_array[right]
+      right = right + 1
+    end
+    dst = dst + 1
+  end
+
+  -- copy the remainder of any non-empty side
+  for i = left, left_end do
+    dst_array[dst] = src_array[i]
+    dst = dst + 1
+  end
+  for i = right, right_end do
+    dst_array[dst] = src_array[i]
+    dst = dst + 1
+  end
+end
+
+local function merge_from_width(dst_array, src_array, old_width, is_in_order)
+  -- handle
+  local last = table.size(src_array)
+  local next_unsorted = 1
+  while next_unsorted < last do
+    local left_start = next_unsorted
+    local left_end = left_start + old_width - 1
+    local right_end = left_end + old_width
+    if left_end > last then
+      left_end = last
+    end
+    if right_end > last then
+      right_end = last
+    end
+    sorted_merge(dst_array, src_array, left_start, left_end, right_end, is_in_order)
+    next_unsorted = right_end + 1
+  end
+end
+
+-- stable sort array using merge sort
+-- is_in_order(x, y) returns true if x <= y
+-- (the = part is important for stability)
+function util.stable_sort(array, is_in_order)
+  local src = array
+  local dst = {}
+
+  local sorted_width = 1
+  while sorted_width < table.size(src) do
+    -- each sorted_width size run of src is already sorted
+    -- sort each sorted_width*2 run by merging two sorted_width runs
+    -- output into dst
+
+    merge_from_width(dst, src, sorted_width, is_in_order)
+    sorted_width = sorted_width * 2
+
+    -- dst is now sorted into sorted_width size runs
+    -- Exchange the arrays in preparation for the next round.
+    local temp = dst
+    dst = src
+    src = temp
+    -- src is now the more-sorted array
+  end
+
+  -- src is now fully sorted
+  -- Copy into the original array if necessary.
+  if not (src == array) then
+    for i = 1, table.size(src) do
+      array[i] = src[i]
     end
   end
 end
@@ -329,7 +402,7 @@ function util.researchedness_comparator(database, player_data, lhs_ident, rhs_id
     local lhs_miss = lhs_data.research_ingredients_missing[force_index]
     local rhs_miss = rhs_data.research_ingredients_missing[force_index]
     if lhs_miss ~= rhs_miss then
-      return lhs_miss < rhs_miss
+      return lhs_miss <= rhs_miss
     end
   end
 
