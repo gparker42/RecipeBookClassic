@@ -44,28 +44,30 @@ function util.build_temperature_ident(fluid)
   local min_temp = -0X1.FFFFFEP+127  -- (-FLT_MAX)
 
   local temperature = fluid.temperature
-  local temperature_min = fluid.minimum_temperature or min_temp
-  local temperature_max = fluid.maximum_temperature or max_temp
+  local minimum_temperature = fluid.minimum_temperature or min_temp
+  local maximum_temperature = fluid.maximum_temperature or max_temp
   local temperature_string
   local short_temperature_string
   local short_top_string
+
   if temperature then
     temperature_string = format_number(temperature)
     short_temperature_string = core_util.format_number(temperature, true)
-    temperature_min = temperature
-    temperature_max = temperature
-  elseif fluid.temperature_min or fluid.temperature_max then
-    if temperature_min <= min_temp then
-      temperature_string = "≤" .. format_number(temperature_max)
-      short_temperature_string = "≤" .. core_util.format_number(temperature_max, true)
-    elseif temperature_max >= max_temp then
-      temperature_string = "≥" .. format_number(temperature_min)
-      short_temperature_string = "≥" .. core_util.format_number(temperature_min, true)
-    else
-      temperature_string = "" .. format_number(temperature_min) .. "-" .. format_number(temperature_max)
-      short_temperature_string = core_util.format_number(temperature_min, true)
-      short_top_string = core_util.format_number(temperature_max, true)
-    end
+    minimum_temperature = temperature
+    maximum_temperature = temperature
+  elseif not fluid.minimum_temperature and not fluid.maximum_temperature then
+    -- no temperature specified
+    temperature_string = nil
+  elseif minimum_temperature <= min_temp then
+    temperature_string = "≤" .. format_number(maximum_temperature)
+    short_temperature_string = "≤" .. core_util.format_number(maximum_temperature, true)
+  elseif maximum_temperature >= max_temp then
+    temperature_string = "≥" .. format_number(minimum_temperature)
+    short_temperature_string = "≥" .. core_util.format_number(minimum_temperature, true)
+  else
+    temperature_string = "" .. format_number(minimum_temperature) .. "-" .. format_number(maximum_temperature)
+    short_temperature_string = core_util.format_number(minimum_temperature, true)
+    short_top_string = core_util.format_number(maximum_temperature, true)
   end
 
   if temperature_string then
@@ -73,8 +75,8 @@ function util.build_temperature_ident(fluid)
       string = temperature_string,
       short_string = short_temperature_string,
       short_top_string = short_top_string,
-      min = temperature_min,
-      max = temperature_max,
+      min = minimum_temperature,
+      max = maximum_temperature,
     }
   end
 end
