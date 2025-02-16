@@ -2,7 +2,8 @@
 
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.1
-Date: ???
+Date: 2025-02-15
+Author: gparker
   Changes:
     - Recipe Book (Classic Remaster) based on raiguard's Recipe Book version 3.
     - Updated for Factorio 2.0.
