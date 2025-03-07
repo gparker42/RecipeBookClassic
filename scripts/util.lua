@@ -330,7 +330,7 @@ local function merge_from_width(dst_array, src_array, old_width, is_in_order)
   -- handle
   local last = table.size(src_array)
   local next_unsorted = 1
-  while next_unsorted < last do
+  while next_unsorted <= last do
     local left_start = next_unsorted
     local left_end = left_start + old_width - 1
     local right_end = left_end + old_width
