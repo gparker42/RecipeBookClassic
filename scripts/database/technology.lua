@@ -80,8 +80,7 @@ return function(database, metadata)
 
             -- For "empty X barrel" recipes, do not unlock the fluid with the barreling recipe
             -- This is to avoid fluids getting "unlocked" when they are in reality still 100 hours away
-            -- GrP fixme does this also include other barrel-like items like canisters?
-            local is_empty_barrel_recipe = string.find(modifier.recipe, "^empty%-.+%-barrel$")
+            local is_empty_barrel_recipe = util.is_empty_barrel_recipe_name(modifier.recipe)
             if product_data.class ~= "fluid" or not is_empty_barrel_recipe then
               product_data.researched_forces = product_data.researched_forces or {}
               product_data.unlocked_by[#product_data.unlocked_by + 1] = { class = "technology", name = name }

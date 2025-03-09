@@ -98,6 +98,18 @@ function util.get_sorting_number(temperature_ident)
   end
 end
 
+-- GrP is there a better way to identify these?
+-- vanilla: empty-X-barrel
+-- py: empty-X-canister (fuel canisters)
+function util.is_empty_barrel_recipe_name(name)
+  for _, query in pairs({ "^empty%-.+%-barrel$", "^empty%-.+%-canister$" }) do
+    if string.find(name, query) then
+      return true
+    end
+  end
+  return false
+end
+
 function util.convert_and_sort(tbl)
   for key in pairs(tbl) do
     tbl[#tbl + 1] = key

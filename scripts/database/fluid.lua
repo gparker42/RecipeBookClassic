@@ -195,7 +195,7 @@ function fluid_proc.process_temperatures(database, metadata)
               if fluid_tbl_name == "product_of" and
                  (obj_ident.class == "entity" or
                   (obj_ident.class == "recipe" and
-                   not string.find(obj_ident.name, "^empty%-.+%-barrel$"))) then
+                   not util.is_empty_barrel_recipe_name(obj_ident.name))) then
                 -- If in product_of, append to unlocked_by
                 -- Also add this fluid to that tech's `unlocks fluids` table
                 local temp_unlocked_by = temperature_data.unlocked_by
