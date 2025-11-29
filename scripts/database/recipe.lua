@@ -6,6 +6,8 @@ local util = require("scripts.util")
 
 local fluid_proc = require("scripts.database.fluid")
 
+local module_category = require("scripts.database.module-category")
+
 local recipe = {}
 
 function recipe.build(database, metadata)
@@ -136,16 +138,44 @@ function recipe.build(database, metadata)
     end
 
     -- Compatible modules
-    -- GrP fixme recipe/module links have inverted in 2.0
-    -- for module_category_name, _ in pairs(prototype.allowed_module_categories or {}) do
-    --   log("GrP recipe " .. name .. " module category " .. module_category_name)
-    -- end
-    -- for module_name, module_limitations in pairs(metadata.modules) do
-    --   if not next(module_limitations) or module_limitations[name] then
-    --     data.accepted_modules[#data.accepted_modules + 1] = { class = "item", name = module_name }
-    --     table.insert(database.item[module_name].affects_recipes, { class = "recipe", name = name })
-    --   end
-    -- end
+    -- Modules can be limited by the recipe or by the crafter.
+    -- Recipe and crafter prototypes list compatible module categories.
+    -- Recipe in database saves each individual module item.
+    -- The list of module items in each module category is already in the metadata.
+    -- For the recipe we record any module allowed by any of its crafters.
+
+    local recipe_module_category_names = module_category.allowed_module_categories_for_recipe(prototype, metadata)
+    local crafter_module_category_names = {}
+    for _, crafter in ipairs(data.made_in) do
+      local categories = metadata.crafter_module_categories[crafter.name]
+      if categories == nil then
+        -- entity is character not crafter: handcrafting has no modules
+      else
+        for module_category_name, _ in pairs(categories) do
+          crafter_module_category_names[module_category_name] = 1
+        end
+      end
+    end
+
+    -- module category must be allowed by both recipe and crafter
+    for module_category_name, _ in pairs(recipe_module_category_names) do
+      if crafter_module_category_names[module_category_name] ~= nil then
+        -- it's allowed, use it
+        local module_names = metadata.module_category[module_category_name].module_names
+
+        -- GrP list all modules in each category
+--      for _, module_name in pairs(module_names) do
+--        data.accepted_modules[#data.accepted_modules + 1] = { class = "item", name = module_name }
+--        table.insert(database.item[module_name].affects_recipes, { class = "recipe", name = name })
+--      end
+
+        -- GrP list only the first module of each category
+        if #module_names > 0 then
+          data.accepted_modules[#data.accepted_modules + 1] = { class = "item", name = module_names[1] }
+--        table.insert(database.item[best_module_prototype.name].affects_recipes, { class = "recipe", name = name })
+        end
+      end
+    end
 
     database.recipe[name] = data
     util.add_to_dictionary("recipe", name, prototype.localised_name)

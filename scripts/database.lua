@@ -18,6 +18,7 @@ local item = require("scripts.database.item")
 local item_type = require("scripts.database.item-type")
 local lab = require("scripts.database.lab")
 local mining_drill = require("scripts.database.mining-drill")
+local module_category = require("scripts.database.module-category")
 local offshore_pump = require("scripts.database.offshore-pump")
 local recipe_category = require("scripts.database.recipe-category")
 local recipe = require("scripts.database.recipe")
@@ -70,8 +71,8 @@ function database.new()
   offshore_pump(self) -- requires fluids
 
   item(self, metadata) -- requires all entities
-
-  recipe(self, metadata) -- requires items and entities
+  module_category(self, metadata) -- requires items
+  recipe(self, metadata) -- requires items and entities and module categories
   resource(self)
   technology(self, metadata)
 
