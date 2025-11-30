@@ -122,7 +122,19 @@ local function percent(value, gui_translations)
 end
 
 local function seconds(value, gui_translations)
-  return expand_string(gui_translations.format_seconds, number(value * 60))
+  return expand_string(gui_translations.format_seconds, number(value))
+end
+
+local function hours_short(value, gui_translations)
+  return expand_string(gui_translations.format_hours_short, number(value))
+end
+
+local function minutes_short(value, gui_translations)
+  return expand_string(gui_translations.format_minutes_short, number(value))
+end
+
+local function seconds_short(value, gui_translations)
+  return expand_string(gui_translations.format_seconds_short, number(value))
 end
 
 local function seconds_from_ticks(value, gui_translations)
@@ -132,6 +144,38 @@ end
 local function per_second(value, gui_translations)
   return number(value) .. " " .. gui_translations.per_second_suffix
 end
+
+local function hour_min_sec_from_ticks(ticks, gui_translations)
+  local sec = math.floor(ticks / 60)
+  local min = math.floor(sec / 60)
+  sec = sec % 60
+  local hour = math.floor(min / 60)
+  min = min % 60
+
+  -- "1h 2m 3s"
+  -- skip any components that are 0
+  -- but print 0 minutes if both hours and seconds are not zero
+  --   "1h 0m 10s" instead of "1h 10s"
+
+  local result = ""
+  if hour > 0 then
+    result = result .. hours_short(hour, gui_translations)
+  end
+  if min > 0 or (hour > 0 and sec > 0) then
+    if result ~= "" then
+      result = result .. " "
+    end
+    result = result .. minutes_short(min, gui_translations)
+  end
+  if sec > 0 then
+    if result ~= "" then
+      result = result .. " "
+    end
+    result = result .. seconds_short(sec, gui_translations)
+  end
+  return result
+end
+
 
 local function object(obj, _, player_data, options)
   local obj_data = storage.database[obj.class][obj.name]
@@ -665,6 +709,7 @@ formatter.research_color_name = research_color_name
 formatter.research_color_suffix = research_color_suffix
 formatter.rich_text = rich_text
 formatter.seconds_from_ticks = seconds_from_ticks
+formatter.hour_min_sec_from_ticks = hour_min_sec_from_ticks
 formatter.seconds = seconds
 formatter.sprite = sprite
 formatter.temperature = temperature

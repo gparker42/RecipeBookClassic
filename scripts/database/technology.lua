@@ -146,7 +146,7 @@ return function(database, metadata)
       research_ingredients_per_unit = research_ingredients_per_unit,
       research_unit_count_formula = formula,
       research_unit_count = research_unit_count,
-      research_unit_energy = prototype.research_unit_energy / 60,
+      research_unit_energy = prototype.research_unit_energy,
       unlocks_entities = unlocks_entities,
       unlocks_equipment = unlocks_equipment,
       unlocks_fluids = unlocks_fluids,

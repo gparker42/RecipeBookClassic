@@ -60,9 +60,10 @@ function item_proc.build(database, metadata)
     end
 
     local spoil_result = prototype.spoil_result
+    local spoil_time = nil
     if spoil_result then
       -- GrP fixme quality
-      spoil_time = spoil_result.get_spoil_ticks()
+      spoil_time = prototype.get_spoil_ticks()
       spoil_result = { class = "item", name = spoil_result.name }
     end
 
@@ -126,22 +127,23 @@ function item_proc.build(database, metadata)
         end
       end
       -- Process which crafters this module is compatible with
-      for crafter_name in pairs(storage.prototypes.crafter) do
-        local crafter_data = database.entity[crafter_name]
-        local allowed_effects = metadata.allowed_effects[crafter_name]
-        local compatible = true
-        if allowed_effects then
-          for effect_name in pairs(prototype.module_effects or {}) do
-            if not allowed_effects[effect_name] then
-              compatible = false
-              break
-            end
-          end
-        end
-        if compatible then
-          crafter_data.accepted_modules[#crafter_data.accepted_modules + 1] = { class = "item", name = name }
-        end
-      end
+      -- GrP allowed_effects (beacons) and allowed_modules_categories (inserted modules) now differ
+      -- for crafter_name in pairs(storage.prototypes.crafter) do
+      --   local crafter_data = database.entity[crafter_name]
+      --   local allowed_effects = metadata.allowed_effects[crafter_name]
+      --   local compatible = true
+      --   if allowed_effects then
+      --     for effect_name in pairs(prototype.module_effects or {}) do
+      --       if not allowed_effects[effect_name] then
+      --         compatible = false
+      --         break
+      --       end
+      --     end
+      --   end
+      --   if compatible then
+      --     crafter_data.accepted_modules[#crafter_data.accepted_modules + 1] = { class = "item", name = name }
+      --   end
+      -- end
     end
 
     local fuel_category = util.convert_to_ident("fuel_category", prototype.fuel_category)
